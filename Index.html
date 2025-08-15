@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☬SHΞN™ learner - رفع مشکل فارسی در ترمینال</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #1a1b26;
+            color: #c0caf5;
+        }
+        .step-card {
+            background-color: #24283b;
+            border: 1px solid #414868;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+            transition: all 0.5s ease-in-out;
+            transform: scale(0.98);
+        }
+        .step-card.active {
+            opacity: 1;
+            transform: scale(1);
+            box-shadow: 0 0 25px rgba(122, 162, 247, 0.2);
+        }
+        .step-card h2 {
+            color: #7aa2f7;
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        .step-card h2 .step-number {
+            background-color: #7aa2f7;
+            color: #1a1b26;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-left: 1rem;
+            flex-shrink: 0;
+        }
+        .btn {
+            background-color: #7aa2f7;
+            color: #1a1b26;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: none;
+            font-size: 1rem;
+        }
+        .btn:hover {
+            background-color: #9ece6a;
+        }
+        .btn:disabled {
+            background-color: #414868;
+            color: #5c637c;
+            cursor: not-allowed;
+        }
+        .link {
+            color: #e0af68;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+        .code-block {
+            background-color: #1a1b26;
+            color: #c0caf5;
+            padding: 1rem;
+            border-radius: 8px;
+            direction: ltr;
+            text-align: left;
+            font-family: monospace;
+            margin-top: 1rem;
+            border: 1px solid #414868;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+        }
+        .checkbox-label input {
+            display: none;
+        }
+        .checkbox-label .checkmark {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #7aa2f7;
+            border-radius: 6px;
+            margin-left: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .checkbox-label input:checked + .checkmark {
+            background-color: #9ece6a;
+            border-color: #9ece6a;
+        }
+        .checkbox-label input:checked + .checkmark svg {
+            display: block;
+        }
+        .final-message {
+            text-align: center;
+            padding: 3rem;
+            border: 2px dashed #9ece6a;
+            border-radius: 12px;
+            background-color: rgba(158, 206, 106, 0.1);
+        }
+        .final-message h2 {
+            color: #9ece6a;
+            font-size: 2rem;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-white mb-2">☬SHΞN™ learner</h1>
+            <p class="text-xl text-gray-400">مبحث: رفع مشکل فارسی نویسی در قسمت ترمینال ویندوز</p>
+        </header>
+
+        <main id="troubleshooter">
+            <!-- Step 0 to 3 are the same -->
+            <div id="step-0" class="step-card active">
+                <h2><span class="step-number">۰</span>مقدمه و تشخیص مشکل</h2>
+                <p class="text-lg">سلام! این راهنمای تعاملی به شما کمک می‌کند تا مشکل برعکس و جداجدا نوشته شدن حروف فارسی در ترمینال (مانند VS Code) را به صورت ریشه‌ای حل کنید.</p>
+                <p class="mt-4"><b>دلیل اصلی مشکل:</b> ترمینال پیش‌فرض قدیمی ویندوز (`cmd.exe`) پشتیبانی مناسبی از زبان‌های راست‌به‌چپ مثل فارسی ندارد. راه‌حل، نصب و تنظیم یک ترمینال مدرن است.</p>
+                <div class="mt-6"><button class="btn" onclick="nextStep(0)">متوجه شدم، شروع کنیم!</button></div>
+            </div>
+            <div id="step-1" class="step-card hidden">
+                <h2><span class="step-number">۱</span>نصب ویندوز ترمینال (مهم‌ترین مرحله)</h2>
+                <p>اولین و بهترین قدم، نصب **Windows Terminal** است. این ابزار مدرن که توسط خود مایکروسافت ساخته شده، به طور کامل از زبان فارسی پشتیبانی می‌کند.</p>
+                <a href="https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701" target="_blank" class="btn mt-4 inline-block">نصب از فروشگاه مایکروسافت (Microsoft Store)</a>
+                <p class="mt-4 text-sm text-gray-400">اگر به فروشگاه دسترسی ندارید، می‌توانید از <a href="https://github.com/microsoft/terminal/releases" target="_blank" class="link">صفحه گیت‌هاب</a> آخرین نسخه را دانلود کنید (فایل با پسوند `.msixbundle`).</p>
+                <label class="checkbox-label"><input type="checkbox" id="step1-check" onchange="checkStep(1)"><span class="checkmark"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></span>ویندوز ترمینال را با موفقیت نصب کردم.</label>
+                <div class="mt-6"><button class="btn" id="step1-btn" onclick="nextStep(1)" disabled>برو به مرحله بعد</button></div>
+            </div>
+            <div id="step-2" class="step-card hidden">
+                <h2><span class="step-number">۲</span>تنظیم به عنوان ترمینال پیش‌فرض ویندوز</h2>
+                <p>حالا باید به ویندوز بگوییم که برای اجرای تمام دستورات، از این ترمینال جدید و قدرتمند استفاده کند.</p>
+                <ol class="list-decimal list-inside mt-4 space-y-2">
+                    <li>برنامه **Windows Terminal** را که نصب کردید، یک بار اجرا کنید.</li>
+                    <li>در بالای پنجره، روی فلش رو به پایین (▾) کلیک کرده و وارد **Settings** (تنظیمات) شوید.</li>
+                    <li>در تب **Startup** (راه‌اندازی)، گزینه **Default terminal application** را پیدا کنید.</li>
+                    <li>مقدار آن را از "Windows Console Host" به **"Windows Terminal"** تغییر دهید و تنظیمات را ذخیره (Save) کنید.</li>
+                </ol>
+                <label class="checkbox-label"><input type="checkbox" id="step2-check" onchange="checkStep(2)"><span class="checkmark"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></span>ویندوز ترمینال را به عنوان پیش‌فرض ویندوز تنظیم کردم.</label>
+                <div class="mt-6"><button class="btn" id="step2-btn" onclick="nextStep(2)" disabled>برو به مرحله بعد</button></div>
+            </div>
+            <div id="step-3" class="step-card hidden">
+                <h2><span class="step-number">۳</span>تنظیم به عنوان ترمینال پیش‌فرض در VS Code</h2>
+                <p>در نهایت، باید به VS Code هم بگوییم که از این به بعد از پروفایل جدید برای ترمینال داخلی خود استفاده کند.</p>
+                <ol class="list-decimal list-inside mt-4 space-y-2">
+                    <li>وارد محیط VS Code شوید.</li>
+                    <li>کلیدهای ترکیبی `Ctrl` + `Shift` + `P` را فشار دهید تا نوار دستورات باز شود.</li>
+                    <li>عبارت زیر را تایپ و انتخاب کنید: <div class="code-block">Terminal: Select Default Profile</div></li>
+                    <li>از لیستی که باز می‌شود، گزینه‌ای که **PowerShell** را نشان می‌دهد (معمولاً با آیکون آبی) انتخاب کنید.</li>
+                    <li>تمام ترمینال‌های باز در VS Code را با کلیک روی آیکون سطل زباله ببندید.</li>
+                </ol>
+                <label class="checkbox-label"><input type="checkbox" id="step3-check" onchange="checkStep(3)"><span class="checkmark"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></span>پروفایل پیش‌فرض ترمینال در VS Code را تغییر دادم.</label>
+                <div class="mt-6"><button class="btn" id="step3-btn" onclick="nextStep(3)" disabled>برو به مرحله بعد</button></div>
+            </div>
+            
+            <!-- Step 4: Test -->
+            <div id="step-4" class="step-card hidden">
+                <h2><span class="step-number">۴</span>آزمایش نهایی</h2>
+                <p>کار تمام است! حالا وقت آزمایش است.</p>
+                <p class="mt-4">یک ترمینال جدید در VS Code باز کنید (با کلیدهای `` ` `` + `Ctrl`) و کد یا دستور فارسی خود را اجرا کنید. آیا خروجی به درستی نمایش داده می‌شود؟</p>
+                <div class="mt-8 flex gap-4">
+                    <button class="btn bg-green-500 hover:bg-green-400" onclick="showResult(true)">بله، مشکل کاملاً حل شد!</button>
+                    <button class="btn bg-yellow-500 hover:bg-yellow-600 text-white" onclick="nextStep(4)">خیر، هنوز مشکل پابرجاست (برو به عیب‌یابی)</button>
+                </div>
+            </div>
+            
+            <!-- Step 5: Final Troubleshooting (New & Improved) -->
+            <div id="step-5" class="step-card hidden">
+                <h2><span class="step-number">۵</span>مرحله نهایی: ترفندهای پیشرفته و راه‌حل‌های انجمن‌ها</h2>
+                <p>اگر هیچ‌کدام از مراحل قبل جواب نداد، یعنی مشکل شما کمیاب و خاص است. در ادامه چند ترفند پیشرفته که از گفتگوهای برنامه‌نویسان در گیت‌هاب و فروم‌ها جمع‌آوری شده را به ترتیب بررسی می‌کنیم.</p>
+                
+                <div class="mt-6 p-4 border border-gray-600 rounded-lg">
+                    <h3 class="text-lg font-bold text-yellow-400">ترفند ۱: تغییر موتور رندرینگ ویندوز ترمینال</h3>
+                    <p class="mt-2">ویندوز ترمینال یک موتور رندرینگ جدید به نام `AtlasEngine` دارد که گاهی با برخی کارت‌های گرافیک یا فونت‌ها تداخل پیدا می‌کند. می‌توانیم آن را غیرفعال کنیم تا به حالت امن‌تر برگردد.</p>
+                    <ol class="list-decimal list-inside mt-2 text-sm">
+                        <li>**ویندوز ترمینال** را باز کرده و وارد **Settings** شوید.</li>
+                        <li>در منوی سمت چپ، روی پروفایل پیش‌فرض خود (معمولاً PowerShell) کلیک کنید.</li>
+                        <li>وارد تب **Advanced** شوید.</li>
+                        <li>در بخش **Rendering**، گزینه `Use the new text renderer ("AtlasEngine")` را روی **Off** یا **خاموش** قرار دهید و تنظیمات را ذخیره کنید.</li>
+                        <li>VS Code را کامل ببندید و دوباره باز کنید و تست کنید.</li>
+                    </ol>
+                </div>
+
+                <div class="mt-6 p-4 border border-gray-600 rounded-lg">
+                    <h3 class="text-lg font-bold text-yellow-400">ترفند ۲: اجرای خودکار دستور `chcp 65001`</h3>
+                    <p class="mt-2">این دستور به ترمینال می‌گوید که از کدپیج `UTF-8` (استاندارد جهانی یونیکد) استفاده کند. می‌توانیم کاری کنیم که این دستور با باز شدن هر ترمینال در VS Code به صورت خودکار اجرا شود.</p>
+                    <ol class="list-decimal list-inside mt-2 text-sm">
+                        <li>در VS Code کلیدهای `Ctrl` + `,` را زده و آیکون فایل `settings.json` را باز کنید.</li>
+                        <li>کد زیر را پیدا کرده و به آن اضافه کنید. اگر وجود نداشت، کل قطعه کد را کپی کنید:
+                            <div class="code-block">
+"terminal.integrated.profiles.windows": {
+    "PowerShell": {
+        "source": "PowerShell",
+        "icon": "terminal-powershell",
+        "args": ["-NoExit", "-Command", "chcp 65001"]
+    }
+},
+"terminal.integrated.defaultProfile.windows": "PowerShell",
+                            </div>
+                        </li>
+                         <li>فایل را ذخیره کنید، VS Code را ری‌استارت کنید و تست کنید.</li>
+                    </ol>
+                </div>
+                
+                <div class="mt-6 p-4 border border-gray-600 rounded-lg">
+                    <h3 class="text-lg font-bold text-yellow-400">ترفند ۳: نصب فونت مخصوص کدنویسی فارسی</h3>
+                    <p class="mt-2">گاهی مشکل از خود فونت است. فونت `Vazirmatn Code` یک نسخه ویژه با قابلیت `ligatures` است که برای محیط کدنویسی بهینه شده.</p>
+                    <ol class="list-decimal list-inside mt-2 text-sm">
+                        <li>از <a href="https://github.com/rastikerdar/vazirmatn/releases/latest" target="_blank" class="link">این لینک مستقیم از گیت‌هاب</a> آخرین نسخه فونت وزیرمتن را دانلود کنید (فایل `Vazirmatn-Code-font-....zip`).</li>
+                        <li>فایل‌ها را از حالت فشرده خارج کرده، همه فونت‌ها را انتخاب، راست‌کلیک و **Install** کنید.</li>
+                        <li>در `settings.json` در VS Code، این دو خط را اضافه کنید:
+                             <div class="code-block">
+"terminal.integrated.fontFamily": "Vazirmatn Code",
+"editor.fontFamily": "Vazirmatn Code",
+                             </div>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="mt-6 p-4 border border-gray-600 rounded-lg">
+                    <h3 class="text-lg font-bold text-yellow-400">آخرین راه‌حل: استفاده از یک ترمینال کاملاً متفاوت</h3>
+                    <p class="mt-2">اگر هیچ‌کدام از روش‌های بالا جواب نداد، شاید بهتر باشد از یک برنامه ترمینال دیگر که موتور رندرینگ کاملاً متفاوتی دارد استفاده کنید. **Tabby** یک گزینه مدرن، زیبا و بسیار قدرتمند است که پشتیبانی خوبی از یونیکد دارد.</p>
+                    <ol class="list-decimal list-inside mt-2 text-sm">
+                        <li>از <a href="https://tabby.sh/" target="_blank" class="link">سایت رسمی Tabby</a> آن را دانلود و نصب کنید.</li>
+                        <li>بعد از نصب، می‌توانید آن را جایگزین ترمینال داخلی VS Code کنید یا به صورت یک پنجره جدا از آن استفاده نمایید.</li>
+                    </ol>
+                </div>
+                
+                <div class="mt-8 flex gap-4">
+                    <button class="btn bg-green-500 hover:bg-green-400" onclick="showResult(true)">بالاخره مشکلم با یکی از این ترفندها حل شد!</button>
+                </div>
+            </div>
+
+            <!-- Final Result -->
+            <div id="final-result" class="hidden">
+                <div class="final-message">
+                    <h2>عالی! مشکل حل شد.</h2>
+                    <p class="mt-4 text-lg">تبریک می‌گویم! حالا ترمینال شما به درستی از زبان فارسی پشتیبانی می‌کند و می‌توانید بدون دردسر کدنویسی کنید.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function nextStep(step) {
+            const current = document.getElementById(`step-${step}`);
+            const next = document.getElementById(`step-${step + 1}`);
+            if (current) {
+                current.classList.remove('active');
+                setTimeout(() => {
+                    current.classList.add('hidden');
+                    if (next) {
+                        next.classList.remove('hidden');
+                        setTimeout(() => next.classList.add('active'), 50);
+                    }
+                }, 300);
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function checkStep(step) {
+            const checkbox = document.getElementById(`step${step}-check`);
+            const button = document.getElementById(`step${step}-btn`);
+            button.disabled = !checkbox.checked;
+        }
+        function showResult(isSuccess) {
+            document.getElementById('troubleshooter').classList.add('hidden');
+            document.getElementById('final-result').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

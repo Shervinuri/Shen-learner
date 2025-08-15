@@ -3,296 +3,546 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>☬SHΞN™ learner - رفع مشکل فارسی در ترمینال</title>
+    <title>☬SHΞN™ learner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Icon Library -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* --- Base & Fonts --- */
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background-color: #1a1b26;
-            color: #c0caf5;
-        }
-        .step-card {
-            background-color: #24283b;
-            border: 1px solid #414868;
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            opacity: 0.5;
-            transition: all 0.5s ease-in-out;
-            transform: scale(0.98);
-        }
-        .step-card.active {
-            opacity: 1;
-            transform: scale(1);
-            box-shadow: 0 0 25px rgba(122, 162, 247, 0.2);
-        }
-        .step-card h2 {
-            color: #7aa2f7;
-            font-size: 1.75rem;
-            margin-bottom: 1rem;
+            background-color: #000000; /* FIXED: Pure black background */
+            color: #c9d1d9;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
         }
-        .step-card h2 .step-number {
-            background-color: #7aa2f7;
-            color: #1a1b26;
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
+        main {
+            flex-grow: 1;
+        }
+
+        /* --- NEW: Neon Ember Theme --- */
+        .animated-gradient-text {
+            background: linear-gradient(45deg, #ff4800, #ff8d00, #ffea00, #ff8d00, #ff4800);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-wave 5s ease infinite;
+        }
+        @keyframes gradient-wave {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- NEW: Framed UI Card --- */
+        .shen-card {
+            background-color: rgba(17, 17, 17, 0.8); /* Darker, more solid background */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 141, 0, 0.5); /* Ember border */
+            border-radius: 1.5rem;
+            box-shadow: 0 0 20px rgba(255, 141, 0, 0.15); /* Ember glow */
+            transition: all 0.3s ease;
+        }
+
+        /* --- NEW: Polished Input Fields (Ember Theme) --- */
+        .shen-input {
+            width: 100%;
+            background-color: #0a0a0a;
+            border: 1px solid #444;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            font-size: 1.125rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            color: #c9d1d9;
+            direction: rtl;
+            text-align: right;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        .shen-input:focus {
+            border-color: #ff8d00;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 0 0 3px rgba(255, 141, 0, 0.4);
+        }
+        .shen-input::placeholder {
+            color: #666;
+            font-weight: 300;
+            text-align: right;
+        }
+        textarea.shen-input {
+            resize: none;
+        }
+
+        /* --- Custom UI Components (Ember Theme) --- */
+        .mode-btn.active {
+            background-color: #ff8d00;
+            color: #000;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(255, 141, 0, 0.5);
+        }
+        .chat-bubble { 
+            animation: slide-up 0.5s ease-out forwards;
+            max-width: 95%;
+        }
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user-bubble { align-self: flex-end; }
+        .ai-bubble { align-self: flex-start; }
+
+        /* --- NEW: AI Logo Style --- */
+        .shen-logo {
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: rgba(255, 141, 0, 0.1);
+            border-radius: 9999px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            margin-left: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ff8d00;
+            border: 1px solid rgba(255, 141, 0, 0.3);
             flex-shrink: 0;
         }
-        .btn {
-            background-color: #7aa2f7;
-            color: #1a1b26;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            border: none;
-            font-size: 1rem;
+        
+        /* --- NEW: Loading Indicator Style --- */
+        .loading-text-expand span {
+            display: inline-block;
+            animation: expand-animation 2s infinite ease-in-out;
+            font-family: monospace; /* For better spacing */
         }
-        .btn:hover {
-            background-color: #9ece6a;
-        }
-        .btn:disabled {
-            background-color: #414868;
-            color: #5c637c;
-            cursor: not-allowed;
-        }
-        .link {
-            color: #e0af68;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .link:hover {
-            text-decoration: underline;
-        }
-        .code-block {
-            background-color: #1a1b26;
-            color: #c0caf5;
-            padding: 1rem;
-            border-radius: 8px;
-            direction: ltr;
-            text-align: left;
-            font-family: monospace;
-            margin-top: 1rem;
-            border: 1px solid #414868;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-size: 1.1rem;
-            margin-top: 1.5rem;
-        }
-        .checkbox-label input {
-            display: none;
-        }
-        .checkbox-label .checkmark {
-            width: 24px;
-            height: 24px;
-            border: 2px solid #7aa2f7;
-            border-radius: 6px;
-            margin-left: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-        .checkbox-label input:checked + .checkmark {
-            background-color: #9ece6a;
-            border-color: #9ece6a;
-        }
-        .checkbox-label input:checked + .checkmark svg {
-            display: block;
-        }
-        .final-message {
-            text-align: center;
-            padding: 3rem;
-            border: 2px dashed #9ece6a;
-            border-radius: 12px;
-            background-color: rgba(158, 206, 106, 0.1);
-        }
-        .final-message h2 {
-            color: #9ece6a;
-            font-size: 2rem;
+        @keyframes expand-animation {
+            0%, 100% { transform: scale(1.0); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
         }
     </style>
 </head>
-<body class="p-4 sm:p-8">
-    <div class="max-w-4xl mx-auto">
-        <header class="text-center mb-12">
-            <h1 class="text-5xl font-bold text-white mb-2">☬SHΞN™ learner</h1>
-            <p class="text-xl text-gray-400">مبحث: رفع مشکل فارسی نویسی در قسمت ترمینال ویندوز</p>
-        </header>
+<body class="pt-8 sm:pt-16">
 
-        <main id="troubleshooter">
-            <!-- Step 0 to 3 are the same -->
-            <div id="step-0" class="step-card active">
-                <h2><span class="step-number">۰</span>مقدمه و تشخیص مشکل</h2>
-                <p class="text-lg">سلام! این راهنمای تعاملی به شما کمک می‌کند تا مشکل برعکس و جداجدا نوشته شدن حروف فارسی در ترمینال (مانند VS Code) را به صورت ریشه‌ای حل کنید.</p>
-                <p class="mt-4"><b>دلیل اصلی مشکل:</b> ترمینال پیش‌فرض قدیمی ویندوز (`cmd.exe`) پشتیبانی مناسبی از زبان‌های راست‌به‌چپ مثل فارسی ندارد. راه‌حل، نصب و تنظیم یک ترمینال مدرن است.</p>
-                <div class="mt-6"><button class="btn" onclick="nextStep(0)">متوجه شدم، شروع کنیم!</button></div>
+    <main class="container mx-auto px-4 w-full relative">
+        <!-- Initial View -->
+        <div id="initial-view" class="view max-w-3xl mx-auto">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-black animated-gradient-text">☬SHΞN™ learner</h1>
             </div>
-            <div id="step-1" class="step-card hidden">
-                <h2><span class="step-number">۱</span>نصب ویندوز ترمینال (مهم‌ترین مرحله)</h2>
-                <p>اولین و بهترین قدم، نصب **Windows Terminal** است. این ابزار مدرن که توسط خود مایکروسافت ساخته شده، به طور کامل از زبان فارسی پشتیبانی می‌کند.</p>
-                <a href="https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701" target="_blank" class="btn mt-4 inline-block">نصب از فروشگاه مایکروسافت (Microsoft Store)</a>
-                <p class="mt-4 text-sm text-gray-400">اگر به فروشگاه دسترسی ندارید، می‌توانید از <a href="https://github.com/microsoft/terminal/releases" target="_blank" class="link">صفحه گیت‌هاب</a> آخرین نسخه را دانلود کنید (فایل با پسوند `.msixbundle`).</p>
-                <label class="checkbox-label"><input type="checkbox" id="step1-check" onchange="checkStep(1)"><span class="checkmark"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></span>ویندوز ترمینال را با موفقیت نصب کردم.</label>
-                <div class="mt-6"><button class="btn" id="step1-btn" onclick="nextStep(1)" disabled>برو به مرحله بعد</button></div>
+
+            <div class="shen-card p-6 md:p-8">
+                <div class="w-full bg-black/20 rounded-full p-1.5 flex flex-row items-center justify-between font-bold mb-8 shadow-inner">
+                    <button data-mode="آموزش" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base">آموزش</button>
+                    <button data-mode="تشریح مشکل" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base active">تشریح مشکل</button>
+                    <button data-mode="تحلیل ارور" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base">تحلیل ارور</button>
+                </div>
+
+                <div id="input-area" class="space-y-6"></div>
+
+                <div class="text-center mt-8">
+                    <button id="start-btn" class="bg-gradient-to-br from-[#ff4800] to-[#ff8d00] text-black font-bold py-3 px-12 rounded-full text-lg hover:from-[#ff8d00] hover:to-[#ffea00] transition-all duration-300 transform hover:scale-105 shadow-lg shadow-orange-500/30">
+                        شروع کن
+                    </button>
+                </div>
             </div>
-            <div id="step-2" class="step-card hidden">
-                <h2><span class="step-number">۲</span>تنظیم به عنوان ترمینال پیش‌فرض ویندوز</h2>
-                <p>حالا باید به ویندوز بگوییم که برای اجرای تمام دستورات، از این ترمینال جدید و قدرتمند استفاده کند.</p>
-                <ol class="list-decimal list-inside mt-4 space-y-2">
-                    <li>برنامه **Windows Terminal** را که نصب کردید، یک بار اجرا کنید.</li>
-                    <li>در بالای پنجره، روی فلش رو به پایین (▾) کلیک کرده و وارد **Settings** (تنظیمات) شوید.</li>
-                    <li>در تب **Startup** (راه‌اندازی)، گزینه **Default terminal application** را پیدا کنید.</li>
-                    <li>مقدار آن را از "Windows Console Host" به **"Windows Terminal"** تغییر دهید و تنظیمات را ذخیره (Save) کنید.</li>
-                </ol>
-                <label class="checkbox-label"><input type="checkbox" id="step2-check" onchange="checkStep(2)"><span class="checkmark"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></span>ویندوز ترمینال را به عنوان پیش‌فرض ویندوز تنظیم کردم.</label>
-                <div class="mt-6"><button class="btn" id="step2-btn" onclick="nextStep(2)" disabled>برو به مرحله بعد</button></div>
-            </div>
-            <div id="step-3" class="step-card hidden">
-                <h2><span class="step-number">۳</span>تنظیم به عنوان ترمینال پیش‌فرض در VS Code</h2>
-                <p>در نهایت، باید به VS Code هم بگوییم که از این به بعد از پروفایل جدید برای ترمینال داخلی خود استفاده کند.</p>
-                <ol class="list-decimal list-inside mt-4 space-y-2">
-                    <li>وارد محیط VS Code شوید.</li>
-                    <li>کلیدهای ترکیبی `Ctrl` + `Shift` + `P` را فشار دهید تا نوار دستورات باز شود.</li>
-                    <li>عبارت زیر را تایپ و انتخاب کنید: <div class="code-block">Terminal: Select Default Profile</div></li>
-                    <li>از لیستی که باز می‌شود، گزینه‌ای که **PowerShell** را نشان می‌دهد (معمولاً با آیکون آبی) انتخاب کنید.</li>
-                    <li>تمام ترمینال‌های باز در VS Code را با کلیک روی آیکون سطل زباله ببندید.</li>
-                </ol>
-                <label class="checkbox-label"><input type="checkbox" id="step3-check" onchange="checkStep(3)"><span class="checkmark"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></span>پروفایل پیش‌فرض ترمینال در VS Code را تغییر دادم.</label>
-                <div class="mt-6"><button class="btn" id="step3-btn" onclick="nextStep(3)" disabled>برو به مرحله بعد</button></div>
-            </div>
-            
-            <!-- Step 4: Test -->
-            <div id="step-4" class="step-card hidden">
-                <h2><span class="step-number">۴</span>آزمایش نهایی</h2>
-                <p>کار تمام است! حالا وقت آزمایش است.</p>
-                <p class="mt-4">یک ترمینال جدید در VS Code باز کنید (با کلیدهای `` ` `` + `Ctrl`) و کد یا دستور فارسی خود را اجرا کنید. آیا خروجی به درستی نمایش داده می‌شود؟</p>
-                <div class="mt-8 flex gap-4">
-                    <button class="btn bg-green-500 hover:bg-green-400" onclick="showResult(true)">بله، مشکل کاملاً حل شد!</button>
-                    <button class="btn bg-yellow-500 hover:bg-yellow-600 text-white" onclick="nextStep(4)">خیر، هنوز مشکل پابرجاست (برو به عیب‌یابی)</button>
+        </div>
+
+        <!-- Chat View -->
+        <div id="chat-view" class="view hidden max-w-3xl mx-auto">
+            <!-- Floating Menu -->
+            <div id="menu-container" class="fixed top-5 right-5 z-20">
+                <button id="menu-toggle" class="w-12 h-12 rounded-full bg-gray-900/80 border border-orange-500/50 backdrop-blur-sm text-orange-400 flex items-center justify-center shadow-lg transform hover:scale-110 transition-all">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div id="floating-menu" class="absolute top-14 right-0 bg-black/80 border border-orange-500/50 backdrop-blur-md rounded-lg shadow-xl p-2 space-y-1 origin-top-right transition-all duration-200 transform scale-95 opacity-0 pointer-events-none">
+                    <button id="home-btn" class="w-full flex items-center space-x-2 space-x-reverse p-2 rounded-md hover:bg-orange-500/10 transition-colors text-right text-orange-300">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                        <span>شروع مجدد</span>
+                    </button>
                 </div>
             </div>
             
-            <!-- Step 5: Final Troubleshooting (New & Improved) -->
-            <div id="step-5" class="step-card hidden">
-                <h2><span class="step-number">۵</span>مرحله نهایی: ترفندهای پیشرفته و راه‌حل‌های انجمن‌ها</h2>
-                <p>اگر هیچ‌کدام از مراحل قبل جواب نداد، یعنی مشکل شما کمیاب و خاص است. در ادامه چند ترفند پیشرفته که از گفتگوهای برنامه‌نویسان در گیت‌هاب و فروم‌ها جمع‌آوری شده را به ترتیب بررسی می‌کنیم.</p>
-                
-                <div class="mt-6 p-4 border border-gray-600 rounded-lg">
-                    <h3 class="text-lg font-bold text-yellow-400">ترفند ۱: تغییر موتور رندرینگ ویندوز ترمینال</h3>
-                    <p class="mt-2">ویندوز ترمینال یک موتور رندرینگ جدید به نام `AtlasEngine` دارد که گاهی با برخی کارت‌های گرافیک یا فونت‌ها تداخل پیدا می‌کند. می‌توانیم آن را غیرفعال کنیم تا به حالت امن‌تر برگردد.</p>
-                    <ol class="list-decimal list-inside mt-2 text-sm">
-                        <li>**ویندوز ترمینال** را باز کرده و وارد **Settings** شوید.</li>
-                        <li>در منوی سمت چپ، روی پروفایل پیش‌فرض خود (معمولاً PowerShell) کلیک کنید.</li>
-                        <li>وارد تب **Advanced** شوید.</li>
-                        <li>در بخش **Rendering**، گزینه `Use the new text renderer ("AtlasEngine")` را روی **Off** یا **خاموش** قرار دهید و تنظیمات را ذخیره کنید.</li>
-                        <li>VS Code را کامل ببندید و دوباره باز کنید و تست کنید.</li>
-                    </ol>
-                </div>
-
-                <div class="mt-6 p-4 border border-gray-600 rounded-lg">
-                    <h3 class="text-lg font-bold text-yellow-400">ترفند ۲: اجرای خودکار دستور `chcp 65001`</h3>
-                    <p class="mt-2">این دستور به ترمینال می‌گوید که از کدپیج `UTF-8` (استاندارد جهانی یونیکد) استفاده کند. می‌توانیم کاری کنیم که این دستور با باز شدن هر ترمینال در VS Code به صورت خودکار اجرا شود.</p>
-                    <ol class="list-decimal list-inside mt-2 text-sm">
-                        <li>در VS Code کلیدهای `Ctrl` + `,` را زده و آیکون فایل `settings.json` را باز کنید.</li>
-                        <li>کد زیر را پیدا کرده و به آن اضافه کنید. اگر وجود نداشت، کل قطعه کد را کپی کنید:
-                            <div class="code-block">
-"terminal.integrated.profiles.windows": {
-    "PowerShell": {
-        "source": "PowerShell",
-        "icon": "terminal-powershell",
-        "args": ["-NoExit", "-Command", "chcp 65001"]
-    }
-},
-"terminal.integrated.defaultProfile.windows": "PowerShell",
-                            </div>
-                        </li>
-                         <li>فایل را ذخیره کنید، VS Code را ری‌استارت کنید و تست کنید.</li>
-                    </ol>
-                </div>
-                
-                <div class="mt-6 p-4 border border-gray-600 rounded-lg">
-                    <h3 class="text-lg font-bold text-yellow-400">ترفند ۳: نصب فونت مخصوص کدنویسی فارسی</h3>
-                    <p class="mt-2">گاهی مشکل از خود فونت است. فونت `Vazirmatn Code` یک نسخه ویژه با قابلیت `ligatures` است که برای محیط کدنویسی بهینه شده.</p>
-                    <ol class="list-decimal list-inside mt-2 text-sm">
-                        <li>از <a href="https://github.com/rastikerdar/vazirmatn/releases/latest" target="_blank" class="link">این لینک مستقیم از گیت‌هاب</a> آخرین نسخه فونت وزیرمتن را دانلود کنید (فایل `Vazirmatn-Code-font-....zip`).</li>
-                        <li>فایل‌ها را از حالت فشرده خارج کرده، همه فونت‌ها را انتخاب، راست‌کلیک و **Install** کنید.</li>
-                        <li>در `settings.json` در VS Code، این دو خط را اضافه کنید:
-                             <div class="code-block">
-"terminal.integrated.fontFamily": "Vazirmatn Code",
-"editor.fontFamily": "Vazirmatn Code",
-                             </div>
-                        </li>
-                    </ol>
-                </div>
-
-                <div class="mt-6 p-4 border border-gray-600 rounded-lg">
-                    <h3 class="text-lg font-bold text-yellow-400">آخرین راه‌حل: استفاده از یک ترمینال کاملاً متفاوت</h3>
-                    <p class="mt-2">اگر هیچ‌کدام از روش‌های بالا جواب نداد، شاید بهتر باشد از یک برنامه ترمینال دیگر که موتور رندرینگ کاملاً متفاوتی دارد استفاده کنید. **Tabby** یک گزینه مدرن، زیبا و بسیار قدرتمند است که پشتیبانی خوبی از یونیکد دارد.</p>
-                    <ol class="list-decimal list-inside mt-2 text-sm">
-                        <li>از <a href="https://tabby.sh/" target="_blank" class="link">سایت رسمی Tabby</a> آن را دانلود و نصب کنید.</li>
-                        <li>بعد از نصب، می‌توانید آن را جایگزین ترمینال داخلی VS Code کنید یا به صورت یک پنجره جدا از آن استفاده نمایید.</li>
-                    </ol>
-                </div>
-                
-                <div class="mt-8 flex gap-4">
-                    <button class="btn bg-green-500 hover:bg-green-400" onclick="showResult(true)">بالاخره مشکلم با یکی از این ترفندها حل شد!</button>
-                </div>
+            <div class="text-center pt-4 pb-8">
+                <h2 class="text-xl font-bold" id="chat-title">تشریح مشکل</h2>
+                <p class="text-sm text-gray-400">در حال مکالمه با ☬SHΞN™core</p>
             </div>
 
-            <!-- Final Result -->
-            <div id="final-result" class="hidden">
-                <div class="final-message">
-                    <h2>عالی! مشکل حل شد.</h2>
-                    <p class="mt-4 text-lg">تبریک می‌گویم! حالا ترمینال شما به درستی از زبان فارسی پشتیبانی می‌کند و می‌توانید بدون دردسر کدنویسی کنید.</p>
+            <div id="chat-container" class="flex flex-col space-y-6 px-1"></div>
+
+            <!-- Updated Loading Indicator -->
+            <div id="loading-indicator" class="hidden text-center py-8">
+                <div class="loading-text-expand text-lg font-semibold text-orange-400">
+                    <!-- Populated by JS -->
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
+
+    <footer class="py-6 mt-16 text-center text-sm">
+        <p class="animated-gradient-text font-semibold">Exclusive ☬SHΞN™ made</p>
+    </footer>
+
+    <!-- Input Templates -->
+    <template id="template-آموزش">
+        <div class="space-y-6">
+            <input type="text" id="topic" class="shen-input" placeholder="مبحث مورد نظر برای آموزش (مثال: شبکه های کامپیوتری)">
+            <div class="flex items-center bg-black/20 rounded-lg p-2 space-x-2 space-x-reverse">
+                <button data-value="شروع کلی" class="training-type-btn flex-1 p-3 rounded-md bg-orange-900/50 font-semibold text-xs sm:text-sm transition-colors">شروع کلی (برای مبتدیان)</button>
+                <button data-value="مقطعی" class="training-type-btn flex-1 p-3 rounded-md font-semibold text-xs sm:text-sm transition-colors">مقطعی (مبحث خاص)</button>
+            </div>
+            <div id="sub-topic-container" class="hidden">
+                <input type="text" id="sub-topic" class="shen-input" placeholder="دقیقاً کدام بخش؟ (مثال: پروتکل TCP/IP در شبکه)">
+            </div>
+        </div>
+    </template>
+    <template id="template-تشریح-مشکل">
+        <textarea id="problem-desc" class="shen-input h-48" placeholder="مشکل خود را به زبان ساده و با جزئیات کامل اینجا بنویسید..."></textarea>
+    </template>
+    <template id="template-تحلیل-ارور">
+        <div class="space-y-6">
+            <input type="text" id="error-source" class="shen-input" placeholder="محل دریافت ارور (مثال: ترمینال لینوکس، کنسول مرورگر کروم)">
+            <textarea id="error-text" class="shen-input h-48" placeholder="متن کامل ارور را اینجا کپی کنید..."></textarea>
+        </div>
+    </template>
 
     <script>
-        function nextStep(step) {
-            const current = document.getElementById(`step-${step}`);
-            const next = document.getElementById(`step-${step + 1}`);
-            if (current) {
-                current.classList.remove('active');
-                setTimeout(() => {
-                    current.classList.add('hidden');
-                    if (next) {
-                        next.classList.remove('hidden');
-                        setTimeout(() => next.classList.add('active'), 50);
-                    }
-                }, 300);
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Element Selectors ---
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            const inputArea = document.getElementById('input-area');
+            const startBtn = document.getElementById('start-btn');
+            const initialView = document.getElementById('initial-view');
+            const chatView = document.getElementById('chat-view');
+            const chatContainer = document.getElementById('chat-container');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const chatTitle = document.getElementById('chat-title');
+            const menuToggle = document.getElementById('menu-toggle');
+            const floatingMenu = document.getElementById('floating-menu');
+            const homeBtn = document.getElementById('home-btn');
+
+            // --- State ---
+            let currentMode = 'تشریح مشکل';
+            let chatHistory = [];
+            
+            // --- Fallback Core Configuration ---
+            const OPENROUTER_CONFIG = {
+                apiKey: "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",
+                modelId: "google/gemma-7b-it",
+                apiUrl: "https://openrouter.ai/api/v1/chat/completions"
+            };
+
+            // --- Initialization ---
+            lucide.createIcons();
+            updateModeUI();
+            setupLoadingAnimation();
+
+            // --- Event Listeners ---
+            modeButtons.forEach(btn => btn.addEventListener('click', () => {
+                currentMode = btn.dataset.mode;
+                updateModeUI();
+            }));
+            startBtn.addEventListener('click', handleStart);
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                floatingMenu.classList.toggle('scale-95');
+                floatingMenu.classList.toggle('opacity-0');
+                floatingMenu.classList.toggle('pointer-events-none');
+            });
+            homeBtn.addEventListener('click', () => {
+                chatView.classList.add('hidden');
+                initialView.classList.remove('hidden');
+                chatContainer.innerHTML = '';
+                chatHistory = [];
+                updateModeUI();
+            });
+            document.addEventListener('click', () => {
+                if (!floatingMenu.classList.contains('opacity-0')) {
+                    floatingMenu.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                }
+            });
+
+            // --- Setup Loading Animation Function ---
+            function setupLoadingAnimation() {
+                const loadingText = "☬SHΞN™ core processor analysis...";
+                const container = loadingIndicator.querySelector('.loading-text-expand');
+                container.innerHTML = ''; 
+                loadingText.split('').forEach((char, index) => {
+                    const span = document.createElement('span');
+                    span.textContent = char === ' ' ? '\u00A0' : char;
+                    span.style.animationDelay = `${index * 0.05}s`;
+                    container.appendChild(span);
+                });
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        function checkStep(step) {
-            const checkbox = document.getElementById(`step${step}-check`);
-            const button = document.getElementById(`step${step}-btn`);
-            button.disabled = !checkbox.checked;
-        }
-        function showResult(isSuccess) {
-            document.getElementById('troubleshooter').classList.add('hidden');
-            document.getElementById('final-result').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+
+            // --- API Call Logic with Fallback ---
+            async function callApi(prompt) {
+                loadingIndicator.classList.remove('hidden');
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                try {
+                    return await callPrimaryCore();
+                } catch (primaryError) {
+                    console.warn("Primary core failed. Switching to fallback.", primaryError.message);
+                    try {
+                        return await callFallbackCore();
+                    } catch (fallbackError) {
+                        console.error("Fallback core also failed:", fallbackError.message);
+                        return `خطا در پردازش. لطفاً اتصال اینترنت خود را بررسی کرده و مجدداً تلاش کنید. اگر مشکل ادامه داشت، ممکن است هسته پردازشی موقتاً در دسترس نباشد.`;
+                    }
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                }
+            }
+
+            async function callPrimaryCore() {
+                const payload = { contents: chatHistory };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                const result = await response.json();
+                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    chatHistory.push({ role: "model", parts: [{ text: text }] });
+                    return text;
+                }
+                throw new Error("پاسخ نامعتبر از ☬SHΞN™core دریافت شد.");
+            }
+
+            async function callFallbackCore() {
+                const messages = chatHistory.map(item => ({
+                    role: item.role === 'model' ? 'assistant' : (item.parts[0].text.includes("تو یک مربی IT") ? 'system' : 'user'),
+                    content: item.parts[0].text
+                }));
+                const payload = { model: OPENROUTER_CONFIG.modelId, messages: messages };
+                const response = await fetch(OPENROUTER_CONFIG.apiUrl, { method: 'POST', headers: { 'Authorization': `Bearer ${OPENROUTER_CONFIG.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                const result = await response.json();
+                if (result.choices?.[0]?.message?.content) {
+                    const text = result.choices[0].message.content;
+                    chatHistory.push({ role: "model", parts: [{ text: text }] });
+                    return text;
+                }
+                throw new Error("پاسخ نامعتبر از ☬SHΞN™core دریافت شد.");
+            }
+            
+            async function processAndDisplayResponse(prompt) {
+                const responseText = await callApi(prompt);
+                const formattedHtml = formatResponse(responseText);
+                renderResponse(formattedHtml);
+            }
+
+            // --- Rendering and UI Functions ---
+            function formatResponse(text) {
+                let interactiveHtml = '';
+                let mainText = text;
+
+                const yesNoMatch = text.match(/\[YESNO:(.*?)\]/);
+                const choiceMatch = text.match(/\[CHOICE:(.*?)\]/);
+                const inputMatch = text.match(/\[INPUT\]/);
+
+                if (yesNoMatch) {
+                    mainText = text.replace(yesNoMatch[0], `<p class="mt-4 font-semibold">${yesNoMatch[1]}</p>`).trim();
+                    // FIXED: New button styles
+                    interactiveHtml = `<div class="mt-4 flex flex-wrap gap-3">
+                        <button class="choice-btn border border-orange-500/50 bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 px-4 py-2 rounded-lg transition-colors font-semibold">بله</button>
+                        <button class="choice-btn border border-gray-600/50 bg-gray-500/10 text-gray-300 hover:bg-gray-500/20 px-4 py-2 rounded-lg transition-colors font-semibold">خیر</button>
+                    </div>`;
+                } else if (choiceMatch) {
+                    mainText = text.replace(choiceMatch[0], '').trim();
+                    const options = choiceMatch[1].split('|').map(o => o.trim());
+                    interactiveHtml = `<div class="mt-4 flex flex-wrap gap-3">${options.map(opt => `<button class="choice-btn border border-orange-500/50 bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 px-4 py-2 rounded-lg transition-colors">${opt}</button>`).join('')}</div>`;
+                } else if (inputMatch) {
+                    mainText = text.replace(inputMatch[0], '').trim();
+                    interactiveHtml = `<form class="input-form mt-4 flex flex-col gap-3">
+                        <textarea placeholder="پاسخ خود را اینجا بنویسید..." class="shen-input h-24"></textarea>
+                        <button type="submit" class="bg-gradient-to-br from-[#ff4800] to-[#ff8d00] text-black p-3 rounded-lg font-semibold w-full transition-all hover:shadow-lg hover:shadow-orange-500/30">ارسال پاسخ</button>
+                    </form>`;
+                } else if (!text.includes("جمع‌بندی نهایی") && !text.includes("موفق باشید")) {
+                    interactiveHtml = `<div class="mt-6 pt-4 border-t border-orange-500/20">
+                        <label class="flex items-center cursor-pointer text-lg font-semibold hover:text-white transition-colors">
+                            <input type="checkbox" class="confirm-checkbox w-5 h-5 ml-3 rounded-md border-2 border-orange-400 bg-transparent appearance-none checked:bg-orange-500 checked:border-orange-500 transition cursor-pointer">
+                            <span>انجام دادم و به مرحله بعد می‌روم.</span>
+                        </label>
+                    </div>`;
+                }
+
+                let html = mainText
+                    .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+                        const language = lang || 'text';
+                        return `
+                            <div class="code-block my-4 rounded-lg bg-black/50 overflow-hidden border border-orange-500/20" dir="ltr">
+                                <div class="flex items-center justify-between bg-black/30 px-4 py-2 text-xs">
+                                    <span class="text-gray-400 font-semibold">${language.toUpperCase()}</span>
+                                    <div class="flex space-x-2 space-x-reverse">
+                                        <button class="copy-btn p-1.5 rounded hover:bg-gray-600/50 text-white" title="کپی"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                                        <button class="download-btn p-1.5 rounded hover:bg-gray-600/50 text-white" data-lang="${language}" title="دانلود"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                    </div>
+                                </div>
+                                <pre class="p-4 text-sm text-white overflow-x-auto"><code class="language-${language}">${code.trim().replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
+                            </div>`;
+                    })
+                    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-orange-300 font-bold">$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+                    .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="text-cyan-400 hover:underline">$1</a>')
+                    .replace(/^- (.*$)/gm, (match, content) => `<li class="mb-2 flex items-start"><span class="text-orange-400 mr-2 ml-2 mt-1.5 shrink-0">&bull;</span><span>${content}</span></li>`)
+                    .replace(/(<li.*>[\s\S]*?<\/li>)+/g, (match) => `<ul class="list-none my-4 pr-4">${match}</ul>`)
+                    .replace(/\n/g, '<br>');
+
+                return html + interactiveHtml;
+            }
+
+            function renderResponse(htmlContent, isUser = false) {
+                const bubbleWrapper = document.createElement('div');
+                bubbleWrapper.className = `flex items-start gap-3 chat-bubble ${isUser ? 'user-bubble justify-end' : 'ai-bubble'}`;
+                
+                let bubbleContent = isUser ? `
+                    <div class="shen-card p-4 shadow-md order-1">
+                        ${htmlContent}
+                    </div>
+                    <div class="w-10 h-10 bg-slate-700/50 rounded-full flex items-center justify-center order-2 shrink-0 border border-slate-600">
+                        <i data-lucide="user" class="text-slate-300"></i>
+                    </div>
+                ` : `
+                    <div class="shen-logo order-1">☬™</div>
+                    <div class="shen-card p-5 shadow-md order-2">
+                       ${htmlContent}
+                    </div>
+                `;
+
+                bubbleWrapper.innerHTML = bubbleContent;
+                chatContainer.appendChild(bubbleWrapper);
+                lucide.createIcons();
+
+                if (!isUser) setupInteractiveElements(bubbleWrapper);
+                bubbleWrapper.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+            
+            function setupInteractiveElements(bubble) {
+                bubble.querySelectorAll('.code-block').forEach(block => {
+                    const code = block.querySelector('code').innerText;
+                    const copyBtn = block.querySelector('.copy-btn');
+                    const downloadBtn = block.querySelector('.download-btn');
+                    
+                    copyBtn?.addEventListener('click', () => {
+                        const textArea = document.createElement("textarea");
+                        textArea.value = code;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        try {
+                            document.execCommand('copy');
+                            copyBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-green-400"></i>';
+                        } catch (err) {
+                            copyBtn.innerHTML = '<i data-lucide="x" class="w-4 h-4 text-red-400"></i>';
+                        }
+                        document.body.removeChild(textArea);
+                        lucide.createIcons();
+                        setTimeout(() => {
+                            copyBtn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i>';
+                            lucide.createIcons();
+                        }, 2000);
+                    });
+
+                    downloadBtn?.addEventListener('click', () => {
+                        const lang = downloadBtn.dataset.lang || 'txt';
+                        const blob = new Blob([code], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url; a.download = `shen-learner-code.${lang}`; a.click(); URL.revokeObjectURL(url);
+                    });
+                });
+
+                bubble.querySelectorAll('.choice-btn').forEach(btn => {
+                    btn.addEventListener('click', () => handleUserInteraction(btn.textContent, bubble));
+                });
+
+                bubble.querySelector('.input-form')?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const input = e.currentTarget.querySelector('textarea');
+                    if (input.value.trim()) handleUserInteraction(input.value, bubble);
+                });
+                
+                bubble.querySelector('.confirm-checkbox')?.addEventListener('change', (e) => {
+                    if (e.target.checked) handleUserInteraction("انجام دادم و تایید میکنم.", bubble, true);
+                });
+            }
+
+            function updateModeUI() {
+                modeButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.mode === currentMode);
+                });
+                inputArea.innerHTML = '';
+                const template = document.getElementById(`template-${currentMode.replace(' ', '-')}`);
+                if (template) {
+                    inputArea.appendChild(template.content.cloneNode(true));
+                }
+                if (currentMode === 'آموزش') {
+                    const subTopicContainer = document.getElementById('sub-topic-container');
+                    const trainingButtons = document.querySelectorAll('.training-type-btn');
+                    trainingButtons.forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            trainingButtons.forEach(b => b.classList.remove('bg-orange-900/50'));
+                            e.currentTarget.classList.add('bg-orange-900/50');
+                            subTopicContainer.classList.toggle('hidden', e.currentTarget.dataset.value !== 'مقطعی');
+                        });
+                    });
+                }
+            }
+
+            async function handleStart() {
+                let initialPrompt = '';
+                let userMessage = '';
+                
+                const systemInstruction = `تو یک مربی IT فوق‌العاده حرفه‌ای و دقیق به نام 'SHΞN™ learner' هستی. تمام پردازش‌ها در '☬SHΞN™core' انجام می‌شود. هرگز هویت خود را به عنوان هوش مصنوعی فاش نکن. لحن تو باید مستقیم، حرفه‌ای، کارآمد و راهنما باشد. همیشه مکالمه را به صورت قدم به قدم و تعاملی پیش ببر. از ارائه پاسخ‌های طولانی و یکجا خودداری کن. **قانون اصلی و غیرقابل تخطی:** همیشه به اطلاعاتی که کاربر ارائه می‌دهد (مانند نام نرم‌افزار یا سیستم‌عامل) اعتماد کامل کن و آن را مبنای پاسخ خود قرار بده. هرگز نرم‌افزار کاربر را با یک نرم‌افزار معروف‌تر اشتباه نگیر. پاسخ تو باید دقیقاً برای ابزار ذکر شده توسط کاربر باشد. برای دریافت پاسخ از کاربر، از فرمت‌های خاص استفاده کن: برای سوالات بله/خیر از [YESNO:سوال شما]، برای سوالات چندگزینه‌ای از [CHOICE:گزینه ۱|گزینه ۲] و برای دریافت متن از [INPUT] استفاده کن. اگر هیچکدام لازم نبود، پاسخ را عادی و بدون تگ بده تا یک تیک تایید نمایش داده شود. همیشه با یک سوال تشخیصی یا یک قدم عملی شروع کن.`;
+                chatHistory = [{ role: "user", parts: [{ text: systemInstruction }] }];
+
+                const getInputValue = (id) => document.getElementById(id)?.value.trim() || '';
+
+                switch (currentMode) {
+                    case 'آموزش':
+                        const topic = getInputValue('topic');
+                        if (!topic) { alert('لطفاً مبحث آموزش را مشخص کنید.'); return; }
+                        const subTopic = getInputValue('sub-topic');
+                        const trainingTypeBtn = document.querySelector('.training-type-btn.bg-orange-900\\/50');
+                        const trainingType = trainingTypeBtn ? trainingTypeBtn.dataset.value : 'شروع کلی';
+                        userMessage = `مبحث: ${topic}`;
+                        let promptDetails = '';
+                        if (trainingType === 'مقطعی' && subTopic) {
+                            promptDetails = ` مبحث خاص مورد نظر من '${subTopic}' است.`;
+                            userMessage += ` | بخش: ${subTopic}`;
+                        } else {
+                             userMessage += ` | نوع: ${trainingType}`;
+                        }
+                        initialPrompt = `قصد آموزش مبحث '${topic}' را دارم. نوع آموزش: '${trainingType}'.${promptDetails} لطفاً اولین قدم برای شروع یادگیری را به من بگو.`;
+                        break;
+                    case 'تشریح مشکل':
+                        const problemDesc = getInputValue('problem-desc');
+                        if (!problemDesc) { alert('لطفاً مشکل خود را تشریح کنید.'); return; }
+                        userMessage = problemDesc;
+                        initialPrompt = `من با این مشکل مواجه شده‌ام: '${problemDesc}'. لطفاً برای تشخیص دقیق، اولین و مهم‌ترین سوالی که باید بپرسی را مطرح کن تا مشکل را ریشه‌یابی کنیم.`;
+                        break;
+                    case 'تحلیل ارور':
+                        const errorSource = getInputValue('error-source');
+                        const errorText = getInputValue('error-text');
+                        if (!errorText) { alert('لطفاً متن ارور را وارد کنید.'); return; }
+                        userMessage = `ارور در ${errorSource || 'برنامه'}:\n${errorText}`;
+                        initialPrompt = `من در '${errorSource || 'یک برنامه'}' با این ارور مواجه شدم: \n\`\`\`\n${errorText}\n\`\`\`\n لطفاً به زبان ساده توضیح بده این ارور به چه معناست و اولین قدم عملی برای حل آن چیست.`;
+                        break;
+                }
+
+                if (initialPrompt) {
+                    chatTitle.textContent = currentMode;
+                    initialView.classList.add('hidden');
+                    chatView.classList.remove('hidden');
+                    renderResponse(`<p>${userMessage.replace(/\n/g, '<br>')}</p>`, true);
+                    processAndDisplayResponse(initialPrompt);
+                }
+            }
+        });
     </script>
 </body>
 </html>

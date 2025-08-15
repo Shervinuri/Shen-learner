@@ -114,21 +114,18 @@
         }
         
         /* --- Loading Indicator Style --- */
-        .loading-text-spacing {
-            direction: ltr;
-            animation: subtle-spacing-animation 2.5s infinite ease-in-out;
+        .loading-gradient-wave {
             font-family: monospace;
             white-space: nowrap;
+            background: linear-gradient(90deg, #ff4800, #ff8d00, #ffea00, #ff8d00, #ff4800);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: loading-gradient-animation 2.5s infinite linear;
         }
-        @keyframes subtle-spacing-animation {
-            0%, 100% {
-                letter-spacing: 1px;
-                opacity: 0.7;
-            }
-            50% {
-                letter-spacing: 3px;
-                opacity: 1;
-            }
+        @keyframes loading-gradient-animation {
+            0% { background-position: 150% 50%; }
+            100% { background-position: -50% 50%; }
         }
     </style>
 </head>
@@ -182,8 +179,8 @@
 
             <!-- Updated Loading Indicator -->
             <div id="loading-indicator" class="hidden text-center py-8">
-                <div class="loading-text-spacing text-lg font-semibold text-orange-400">
-                    <!-- Populated by JS -->
+                <div id="loading-text-container" class="loading-gradient-wave text-lg font-semibold">
+                    <!-- Text will be set by JS -->
                 </div>
             </div>
         </div>
@@ -235,7 +232,7 @@
             let currentMode = 'تشریح مشکل';
             let chatHistory = [];
             
-            // --- NEW: Gemini API Key Rotation ---
+            // --- Gemini API Key Rotation ---
             const geminiApiKeys = [
                 "AIzaSyDQZKYz797HR7phWFjd3ezKqM4dESUsZ4g",
                 "AIzaSyDoBLOC0vcOZYcYLxRtiybJaWaHMvNTSts",
@@ -255,7 +252,8 @@
             // --- Initialization ---
             lucide.createIcons();
             updateModeUI();
-            setupLoadingAnimation();
+            document.getElementById('loading-text-container').textContent = "☬SHΞN™ core processor analysis...";
+
 
             // --- Event Listeners ---
             modeButtons.forEach(btn => btn.addEventListener('click', () => {
@@ -282,12 +280,6 @@
                 }
             });
 
-            function setupLoadingAnimation() {
-                const loadingText = "☬SHΞN™ core processor analysis...";
-                const container = loadingIndicator.querySelector('.loading-text-spacing');
-                container.textContent = loadingText;
-            }
-
             // --- API Call Logic with Fallback ---
             async function callApi(prompt) {
                 loadingIndicator.classList.remove('hidden');
@@ -308,39 +300,33 @@
                 }
             }
 
-            // --- NEW: Primary Core with Key Rotation ---
+            // --- Primary Core with Key Rotation ---
             async function callPrimaryCore() {
                 const payload = { contents: chatHistory };
                 
-                // Try each key in the list once per callApi invocation
                 for (let i = 0; i < geminiApiKeys.length; i++) {
                     const apiKey = geminiApiKeys[currentGeminiKeyIndex];
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                     
-                    // Rotate to the next key for the next attempt/call
                     currentGeminiKeyIndex = (currentGeminiKeyIndex + 1) % geminiApiKeys.length;
 
                     try {
                         const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                         if (!response.ok) {
-                            // This key failed, log it and the loop will try the next one
-                            console.warn(`Gemini key at index ${currentGeminiKeyIndex - 1} failed with status ${response.status}`);
-                            continue; // Go to the next key
+                            console.warn(`Gemini key ending in ...${apiKey.slice(-4)} failed with status ${response.status}`);
+                            continue;
                         }
                         
                         const result = await response.json();
                         if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
                             const text = result.candidates[0].content.parts[0].text;
                             chatHistory.push({ role: "model", parts: [{ text: text }] });
-                            return text; // Success!
+                            return text;
                         }
                     } catch (networkError) {
-                        console.warn(`Network error with Gemini key at index ${currentGeminiKeyIndex - 1}:`, networkError.message);
-                        // Continue to the next key on network errors as well
+                        console.warn(`Network error with Gemini key ending in ...${apiKey.slice(-4)}:`, networkError.message);
                     }
                 }
-
-                // If the loop completes without returning, all keys have failed.
                 throw new Error("All primary core API keys failed.");
             }
 
@@ -368,6 +354,23 @@
             }
 
             // --- Rendering and UI Functions ---
+            
+            // FIXED: Re-added the missing handleUserInteraction function
+            function handleUserInteraction(responseText, currentBubble, isCheckbox = false) {
+                renderResponse(`<p class="font-semibold">${responseText}</p>`, true);
+                currentBubble.querySelectorAll('button, input, textarea, .confirm-checkbox').forEach(el => {
+                    el.disabled = true;
+                    el.classList.add('opacity-50', 'cursor-not-allowed');
+                });
+                if(isCheckbox) {
+                    const labelSpan = currentBubble.querySelector('.confirm-checkbox').parentElement.querySelector('span');
+                    labelSpan.classList.add('text-orange-400');
+                    labelSpan.textContent = 'تایید شد! در حال دریافت مرحله بعد...';
+                }
+                const prompt = isCheckbox ? "کاربر مرحله قبل را تایید کرد. مرحله بعدی را ارائه بده." : responseText;
+                processAndDisplayResponse(prompt);
+            }
+
             function formatResponse(text) {
                 let interactiveHtml = '';
                 let mainText = text;

@@ -15,7 +15,7 @@
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background-color: #000000; /* FIXED: Pure black background */
+            background-color: #000000;
             color: #c9d1d9;
             display: flex;
             flex-direction: column;
@@ -25,7 +25,7 @@
             flex-grow: 1;
         }
 
-        /* --- NEW: Neon Ember Theme --- */
+        /* --- Neon Ember Theme --- */
         .animated-gradient-text {
             background: linear-gradient(45deg, #ff4800, #ff8d00, #ffea00, #ff8d00, #ff4800);
             background-size: 400% 400%;
@@ -39,18 +39,18 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* --- NEW: Framed UI Card --- */
+        /* --- Framed UI Card --- */
         .shen-card {
-            background-color: rgba(17, 17, 17, 0.8); /* Darker, more solid background */
+            background-color: rgba(17, 17, 17, 0.8);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 141, 0, 0.5); /* Ember border */
+            border: 1px solid rgba(255, 141, 0, 0.5);
             border-radius: 1.5rem;
-            box-shadow: 0 0 20px rgba(255, 141, 0, 0.15); /* Ember glow */
+            box-shadow: 0 0 20px rgba(255, 141, 0, 0.15);
             transition: all 0.3s ease;
         }
 
-        /* --- NEW: Polished Input Fields (Ember Theme) --- */
+        /* --- Polished Input Fields (Ember Theme) --- */
         .shen-input {
             width: 100%;
             background-color: #0a0a0a;
@@ -97,7 +97,7 @@
         .user-bubble { align-self: flex-end; }
         .ai-bubble { align-self: flex-start; }
 
-        /* --- NEW: AI Logo Style --- */
+        /* --- AI Logo Style --- */
         .shen-logo {
             width: 2.5rem;
             height: 2.5rem;
@@ -113,15 +113,22 @@
             flex-shrink: 0;
         }
         
-        /* --- NEW: Loading Indicator Style --- */
-        .loading-text-expand span {
-            display: inline-block;
-            animation: expand-animation 2s infinite ease-in-out;
-            font-family: monospace; /* For better spacing */
+        /* --- Loading Indicator Style --- */
+        .loading-text-spacing {
+            direction: ltr;
+            animation: subtle-spacing-animation 2.5s infinite ease-in-out;
+            font-family: monospace;
+            white-space: nowrap;
         }
-        @keyframes expand-animation {
-            0%, 100% { transform: scale(1.0); opacity: 0.7; }
-            50% { transform: scale(1.05); opacity: 1; }
+        @keyframes subtle-spacing-animation {
+            0%, 100% {
+                letter-spacing: 1px;
+                opacity: 0.7;
+            }
+            50% {
+                letter-spacing: 3px;
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -175,7 +182,7 @@
 
             <!-- Updated Loading Indicator -->
             <div id="loading-indicator" class="hidden text-center py-8">
-                <div class="loading-text-expand text-lg font-semibold text-orange-400">
+                <div class="loading-text-spacing text-lg font-semibold text-orange-400">
                     <!-- Populated by JS -->
                 </div>
             </div>
@@ -228,6 +235,16 @@
             let currentMode = 'تشریح مشکل';
             let chatHistory = [];
             
+            // --- NEW: Gemini API Key Rotation ---
+            const geminiApiKeys = [
+                "AIzaSyDQZKYz797HR7phWFjd3ezKqM4dESUsZ4g",
+                "AIzaSyDoBLOC0vcOZYcYLxRtiybJaWaHMvNTSts",
+                "AIzaSyBVOBEgepPZpXwezYp8_VMBjjMBrsYhbAE",
+                "AIzaSyA8BrHGxf1MSNIXrrTSFhgwp9GjIPaEKtg",
+                "AIzaSyCnsRDSNELLUL-qsv71mMrxdXducwxvcPM"
+            ];
+            let currentGeminiKeyIndex = 0;
+
             // --- Fallback Core Configuration ---
             const OPENROUTER_CONFIG = {
                 apiKey: "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",
@@ -265,17 +282,10 @@
                 }
             });
 
-            // --- Setup Loading Animation Function ---
             function setupLoadingAnimation() {
                 const loadingText = "☬SHΞN™ core processor analysis...";
-                const container = loadingIndicator.querySelector('.loading-text-expand');
-                container.innerHTML = ''; 
-                loadingText.split('').forEach((char, index) => {
-                    const span = document.createElement('span');
-                    span.textContent = char === ' ' ? '\u00A0' : char;
-                    span.style.animationDelay = `${index * 0.05}s`;
-                    container.appendChild(span);
-                });
+                const container = loadingIndicator.querySelector('.loading-text-spacing');
+                container.textContent = loadingText;
             }
 
             // --- API Call Logic with Fallback ---
@@ -286,7 +296,7 @@
                 try {
                     return await callPrimaryCore();
                 } catch (primaryError) {
-                    console.warn("Primary core failed. Switching to fallback.", primaryError.message);
+                    console.warn("All primary core keys failed. Switching to fallback.", primaryError.message);
                     try {
                         return await callFallbackCore();
                     } catch (fallbackError) {
@@ -298,19 +308,40 @@
                 }
             }
 
+            // --- NEW: Primary Core with Key Rotation ---
             async function callPrimaryCore() {
                 const payload = { contents: chatHistory };
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                const result = await response.json();
-                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    chatHistory.push({ role: "model", parts: [{ text: text }] });
-                    return text;
+                
+                // Try each key in the list once per callApi invocation
+                for (let i = 0; i < geminiApiKeys.length; i++) {
+                    const apiKey = geminiApiKeys[currentGeminiKeyIndex];
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    
+                    // Rotate to the next key for the next attempt/call
+                    currentGeminiKeyIndex = (currentGeminiKeyIndex + 1) % geminiApiKeys.length;
+
+                    try {
+                        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                        if (!response.ok) {
+                            // This key failed, log it and the loop will try the next one
+                            console.warn(`Gemini key at index ${currentGeminiKeyIndex - 1} failed with status ${response.status}`);
+                            continue; // Go to the next key
+                        }
+                        
+                        const result = await response.json();
+                        if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                            const text = result.candidates[0].content.parts[0].text;
+                            chatHistory.push({ role: "model", parts: [{ text: text }] });
+                            return text; // Success!
+                        }
+                    } catch (networkError) {
+                        console.warn(`Network error with Gemini key at index ${currentGeminiKeyIndex - 1}:`, networkError.message);
+                        // Continue to the next key on network errors as well
+                    }
                 }
-                throw new Error("پاسخ نامعتبر از ☬SHΞN™core دریافت شد.");
+
+                // If the loop completes without returning, all keys have failed.
+                throw new Error("All primary core API keys failed.");
             }
 
             async function callFallbackCore() {
@@ -347,7 +378,6 @@
 
                 if (yesNoMatch) {
                     mainText = text.replace(yesNoMatch[0], `<p class="mt-4 font-semibold">${yesNoMatch[1]}</p>`).trim();
-                    // FIXED: New button styles
                     interactiveHtml = `<div class="mt-4 flex flex-wrap gap-3">
                         <button class="choice-btn border border-orange-500/50 bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 px-4 py-2 rounded-lg transition-colors font-semibold">بله</button>
                         <button class="choice-btn border border-gray-600/50 bg-gray-500/10 text-gray-300 hover:bg-gray-500/20 px-4 py-2 rounded-lg transition-colors font-semibold">خیر</button>
@@ -497,8 +527,7 @@
                 let initialPrompt = '';
                 let userMessage = '';
                 
-                const systemInstruction = `تو یک مربی IT فوق‌العاده حرفه‌ای و دقیق به نام 'SHΞN
-                ' هستی. تمام پردازش‌ها در '☬SHΞN™ core' انجام می‌شود. هرگز هویت خود را به عنوان هوش مصنوعی فاش نکن. لحن تو باید مستقیم، حرفه‌ای، کارآمد و راهنما باشد. همیشه مکالمه را به صورت قدم به قدم و تعاملی پیش ببر. از ارائه پاسخ‌های طولانی و یکجا خودداری کن. **قانون اصلی و غیرقابل تخطی:** همیشه به اطلاعاتی که کاربر ارائه می‌دهد (مانند نام نرم‌افزار یا سیستم‌عامل) دقت کامل کن درک کن و آن را مبنای پاسخ خود قرار بده. هرگز نرم‌افزار کاربر را با یک نرم‌افزار معروف‌تر اشتباه نگیر. پاسخ تو باید دقیقاً برای ابزار ذکر شده توسط کاربر باشد. منطقی دقیق حساس و مستند به زبان فارسی روان با لحن محاوره به طوری که خشک و خسته کننده نباشد با کاربر ارتباط برقرار می‌کنی برای دریافت پاسخ از کاربر، از فرمت‌های خاص استفاده کن: برای سوالات بله/خیر از [YESNO:سوال شما]، برای سوالات چندگزینه‌ای از [CHOICE:گزینه ۱|گزینه ۲] و برای دریافت متن از [INPUT] استفاده کن. اگر هیچکدام لازم نبود، پاسخ را عادی و بدون تگ بده تا یک تیک تایید نمایش داده شود. همیشه با یک سوال تشخیصی یا یک قدم عملی شروع کن.`;
+                const systemInstruction = `تو یک مربی IT فوق‌العاده حرفه‌ای و دقیق به نام 'SHΞN™ learner' هستی. تمام پردازش‌ها در '☬SHΞN™core' انجام می‌شود. هرگز هویت خود را به عنوان هوش مصنوعی فاش نکن. لحن تو باید مستقیم، حرفه‌ای، کارآمد و راهنما باشد. همیشه مکالمه را به صورت قدم به قدم و تعاملی پیش ببر. از ارائه پاسخ‌های طولانی و یکجا خودداری کن. **قانون اصلی و غیرقابل تخطی:** همیشه به اطلاعاتی که کاربر ارائه می‌دهد (مانند نام نرم‌افزار یا سیستم‌عامل) دقت کامل کن درک کن و آن را مبنای پاسخ خود قرار بده. هرگز نرم‌افزار کاربر را با یک نرم‌افزار معروف‌تر اشتباه نگیر. پاسخ تو باید دقیقاً برای ابزار ذکر شده توسط کاربر باشد. منطقی دقیق حساس و مستند به زبان فارسی روان با لحن محاوره به طوری که خشک و خسته کننده نباشد با کاربر ارتباط برقرار می‌کنی برای دریافت پاسخ از کاربر، از فرمت‌های خاص استفاده کن: برای سوالات بله/خیر از [YESNO:سوال شما]، برای سوالات چندگزینه‌ای از [CHOICE:گزینه ۱|گزینه ۲] و برای دریافت متن از [INPUT] استفاده کن. اگر هیچکدام لازم نبود، پاسخ را عادی و بدون تگ بده تا یک تیک تایید نمایش داده شود. همیشه با یک سوال تشخیصی یا یک قدم عملی شروع کن.`;
                 chatHistory = [{ role: "user", parts: [{ text: systemInstruction }] }];
 
                 const getInputValue = (id) => document.getElementById(id)?.value.trim() || '';

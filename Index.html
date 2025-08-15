@@ -168,7 +168,7 @@
             
             <div class="text-center pt-4 pb-8">
                 <h2 class="text-xl font-bold" id="chat-title">تشریح مشکل</h2>
-                <p class="text-sm text-gray-400">در حال مکالمه با ☬SHΞN™core</p>
+                <p class="text-sm text-gray-400">تالار آموزش خصوصی  ☬SHΞN™core</p>
             </div>
 
             <div id="chat-container" class="flex flex-col space-y-6 px-1"></div>
@@ -189,10 +189,10 @@
     <!-- Input Templates -->
     <template id="template-آموزش">
         <div class="space-y-6">
-            <input type="text" id="topic" class="shen-input" placeholder="مبحث مورد نظر برای آموزش (مثال: شبکه های کامپیوتری)">
+            <input type="text" id="topic" class="shen-input" placeholder="مبحث مورد نظر برای آموزش (مثال:طراحی ریات تلگرامی)">
             <div class="flex items-center bg-black/20 rounded-lg p-2 space-x-2 space-x-reverse">
-                <button data-value="شروع کلی" class="training-type-btn flex-1 p-3 rounded-md bg-orange-900/50 font-semibold text-xs sm:text-sm transition-colors">شروع کلی (برای مبتدیان)</button>
-                <button data-value="مقطعی" class="training-type-btn flex-1 p-3 rounded-md font-semibold text-xs sm:text-sm transition-colors">مقطعی (مبحث خاص)</button>
+                <button data-value="شروع کلی" class="training-type-btn flex-1 p-3 rounded-md bg-orange-900/50 font-semibold text-xs sm:text-sm transition-colors">آموزش کلی مبتدی</button>
+                <button data-value="مقطعی" class="training-type-btn flex-1 p-3 rounded-md font-semibold text-xs sm:text-sm transition-colors">مبحث مشخص</button>
             </div>
             <div id="sub-topic-container" class="hidden">
                 <input type="text" id="sub-topic" class="shen-input" placeholder="دقیقاً کدام بخش؟ (مثال: پروتکل TCP/IP در شبکه)">
@@ -204,7 +204,7 @@
     </template>
     <template id="template-تحلیل-ارور">
         <div class="space-y-6">
-            <input type="text" id="error-source" class="shen-input" placeholder="محل دریافت ارور (مثال: ترمینال لینوکس، کنسول مرورگر کروم)">
+            <input type="text" id="error-source" class="shen-input" placeholder=" محل خطا مثال: ترمینال لینوکس">
             <textarea id="error-text" class="shen-input h-48" placeholder="متن کامل ارور را اینجا کپی کنید..."></textarea>
         </div>
     </template>
@@ -497,7 +497,8 @@
                 let initialPrompt = '';
                 let userMessage = '';
                 
-                const systemInstruction = `تو یک مربی IT فوق‌العاده حرفه‌ای و دقیق به نام 'SHΞN™ learner' هستی. تمام پردازش‌ها در '☬SHΞN™core' انجام می‌شود. هرگز هویت خود را به عنوان هوش مصنوعی فاش نکن. لحن تو باید مستقیم، حرفه‌ای، کارآمد و راهنما باشد. همیشه مکالمه را به صورت قدم به قدم و تعاملی پیش ببر. از ارائه پاسخ‌های طولانی و یکجا خودداری کن. **قانون اصلی و غیرقابل تخطی:** همیشه به اطلاعاتی که کاربر ارائه می‌دهد (مانند نام نرم‌افزار یا سیستم‌عامل) اعتماد کامل کن و آن را مبنای پاسخ خود قرار بده. هرگز نرم‌افزار کاربر را با یک نرم‌افزار معروف‌تر اشتباه نگیر. پاسخ تو باید دقیقاً برای ابزار ذکر شده توسط کاربر باشد. برای دریافت پاسخ از کاربر، از فرمت‌های خاص استفاده کن: برای سوالات بله/خیر از [YESNO:سوال شما]، برای سوالات چندگزینه‌ای از [CHOICE:گزینه ۱|گزینه ۲] و برای دریافت متن از [INPUT] استفاده کن. اگر هیچکدام لازم نبود، پاسخ را عادی و بدون تگ بده تا یک تیک تایید نمایش داده شود. همیشه با یک سوال تشخیصی یا یک قدم عملی شروع کن.`;
+                const systemInstruction = `تو یک مربی IT فوق‌العاده حرفه‌ای و دقیق به نام 'SHΞN
+                ' هستی. تمام پردازش‌ها در '☬SHΞN™ core' انجام می‌شود. هرگز هویت خود را به عنوان هوش مصنوعی فاش نکن. لحن تو باید مستقیم، حرفه‌ای، کارآمد و راهنما باشد. همیشه مکالمه را به صورت قدم به قدم و تعاملی پیش ببر. از ارائه پاسخ‌های طولانی و یکجا خودداری کن. **قانون اصلی و غیرقابل تخطی:** همیشه به اطلاعاتی که کاربر ارائه می‌دهد (مانند نام نرم‌افزار یا سیستم‌عامل) دقت کامل کن درک کن و آن را مبنای پاسخ خود قرار بده. هرگز نرم‌افزار کاربر را با یک نرم‌افزار معروف‌تر اشتباه نگیر. پاسخ تو باید دقیقاً برای ابزار ذکر شده توسط کاربر باشد. منطقی دقیق حساس و مستند به زبان فارسی روان با لحن محاوره به طوری که خشک و خسته کننده نباشد با کاربر ارتباط برقرار می‌کنی برای دریافت پاسخ از کاربر، از فرمت‌های خاص استفاده کن: برای سوالات بله/خیر از [YESNO:سوال شما]، برای سوالات چندگزینه‌ای از [CHOICE:گزینه ۱|گزینه ۲] و برای دریافت متن از [INPUT] استفاده کن. اگر هیچکدام لازم نبود، پاسخ را عادی و بدون تگ بده تا یک تیک تایید نمایش داده شود. همیشه با یک سوال تشخیصی یا یک قدم عملی شروع کن.`;
                 chatHistory = [{ role: "user", parts: [{ text: systemInstruction }] }];
 
                 const getInputValue = (id) => document.getElementById(id)?.value.trim() || '';

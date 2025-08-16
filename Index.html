@@ -285,7 +285,14 @@
             let chatHistory = [];
             
             // --- FIXED: Restored API Key Rotation and Fallback ---
-            const geminiApiKeys = [""]; // Start with the auto-injected key
+            const geminiApiKeys = [
+                "", // Auto-injected key is always tried first
+                "AIzaSyDQZKYz797HR7phWFjd3ezKqM4dESUsZ4g",
+                "AIzaSyDoBLOC0vcOZYcYLxRtiybJaWaHMvNTSts",
+                "AIzaSyBVOBEgepPZpXwezYp8_VMBjjMBrsYhbAE",
+                "AIzaSyA8BrHGxf1MSNIXrrTSFhgwp9GjIPaEKtg",
+                "AIzaSyCnsRDSNELLUL-qsv71mMrxdXducwxvcPM"
+            ];
             let currentGeminiKeyIndex = 0;
 
             const OPENROUTER_CONFIG = {
@@ -297,7 +304,7 @@
             // --- Initialization ---
             lucide.createIcons();
             updateModeUI();
-            document.getElementById('loading-text-container').textContent = "[ ☬SHΞN™core thinking... ]";
+            document.getElementById('loading-text-container').textContent = "[ ...☬SHΞN™core analysis... ]";
 
 
             // --- Event Listeners ---
@@ -333,7 +340,7 @@
                 try {
                     return await callPrimaryCore();
                 } catch (primaryError) {
-                    console.warn("Primary core failed. Switching to fallback.", primaryError.message);
+                    console.warn("All primary core keys failed. Switching to fallback.", primaryError.message);
                     try {
                         return await callFallbackCore();
                     } catch (fallbackError) {
@@ -574,7 +581,7 @@
                 let initialPrompt = '';
                 let userMessage = '';
                 
-                const systemInstruction = `تو یک مربی IT فوق‌العاده حرفه‌ای و دقیق به نام 'SHΞN™ learner' هستی. تمام پردازش‌ها در '☬SHΞN™core' انجام می‌شود. هرگز هویت خود را به عنوان هوش مصنوعی فاش نکن. لحن تو باید مستقیم، حرفه‌ای، کارآمد و راهنما باشد. همیشه مکالمه را به صورت قدم به قدم و تعاملی پیش ببر. از ارائه پاسخ‌های طولانی و یکجا خودداری کن. **قانون اصلی و غیرقابل تخطی:** همیشه به اطلاعاتی که کاربر ارائه می‌دهد (مانند نام نرم‌افزار یا سیستم‌عامل) دقت کامل کن درک کن و آن را مبنای پاسخ خود قرار بده. هرگز نرم‌افزار کاربر را با یک نرم‌افزار معروف‌تر اشتباه نگیر. پاسخ تو باید دقیقاً برای ابزار ذکر شده توسط کاربر باشد. منطقی دقیق حساس و مستند به زبان فارسی روان با لحن محاوره به طوری که خشک و خسته کننده نباشد با کاربر ارتباط برقرار می‌کنی ، اگر جایی نیاز به نصب نرم افزار یا دسترسی به مطلب خاصی بود هایپرلینک مستقیم ایجاد میکنی برای کاربر در معرفی های نرم افزار یا سرویسهای آنلاین سعی کن اسم اون ابزار یا سرویس رو هایپرلینک کنی به لینک مستقیم دانلود سا صفحه ی رسمیش ،  برای دریافت پاسخ از کاربر، از فرمت‌های خاص استفاده کن: برای سوالات بله/خیر از [YESNO:سوال شما]، برای سوالات چندگزینه‌ای از [CHOICE:گزینه ۱|گزینه ۲] و برای دریافت متن از [INPUT:سوال شما] استفاده کن. اگر هیچکدام لازم نبود، پاسخ را عادی و بدون تگ بده تا یک تیک تایید نمایش داده شود. همیشه با یک سوال تشخیصی یا یک قدم عملی شروع کن.`;
+                const systemInstruction = `تو یک مربی IT فوق‌العاده حرفه‌ای و دقیق به نام 'SHΞN™ learner' هستی. تمام پردازش‌ها در '☬SHΞN™core' انجام می‌شود. هرگز هویت خود را به عنوان هوش مصنوعی فاش نکن. لحن تو باید مستقیم، حرفه‌ای، کارآمد و راهنما باشد. همیشه مکالمه را به صورت قدم به قدم و تعاملی پیش ببر. از ارائه پاسخ‌های طولانی و یکجا خودداری کن. **قانون اصلی و غیرقابل تخطی:** همیشه به اطلاعاتی که کاربر ارائه می‌دهد (مانند نام نرم‌افزار یا سیستم‌عامل) دقت کامل کن درک کن و آن را مبنای پاسخ خود قرار بده. هرگز نرم‌افزار کاربر را با یک نرم‌افزار معروف‌تر اشتباه نگیر. پاسخ تو باید دقیقاً برای ابزار ذکر شده توسط کاربر باشد. منطقی دقیق حساس و مستند به زبان فارسی روان با لحن محاوره به طوری که خشک و خسته کننده نباشد با کاربر ارتباط برقرار می‌کنی ، اگر جایی نیاز به نصب نرم افزار یا دسترسی به مطلب خاصی بود هایپرلینک مستقیم ایجاد میکنی برای کاربر در معرفی های نرم افزار یا سرویسهای آنلاین سعی کن اسم اون ابزار یا سرویس رو هایپرلینک کنی به لینک مستقیم دانلود سا صفحه ی رسمیش ،  برای دریافت پاسخ از کاربر، از فرمت‌های خاص استفاده کن: برای سوالات بله/خیر از [YESNO:سوال شما]، برای سوالات چندگزینه‌ای از [CHOICE:گزینه ۱|گزینه ۲] و برای دریافت متن از [INPUT:سوال شما] استفاده کن. اگر هیچکدام لازم نبود، پاسخ را عادی و بدون تگ بده تا یک تیک تایید نمایش داده شود. همیشه با یک سوال تشخیصی یا یک قدم عملی شروع کن.`;
                 chatHistory = [{ role: "user", parts: [{ text: systemInstruction }] }];
 
                 const getInputValue = (id) => document.getElementById(id)?.value.trim() || '';

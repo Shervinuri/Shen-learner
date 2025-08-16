@@ -1,310 +1,182 @@
-
 <!DOCTYPE html>
-
 <html lang="fa" dir="rtl">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پایان سهمیه</title>
+    <!-- Tailwind CSS for utility classes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vazirmatn Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Base & Fonts */
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #000000;
+            color: #c9d1d9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow: hidden;
+        }
 
-    <meta charset="UTF-8">
+        main {
+            flex-grow: 1;
+            position: relative;
+            z-index: 1; /* Make sure the main content is above the canvas */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        /* Framed UI Card Style */
+        .message-card {
+            background-color: rgba(10, 10, 10, 0.75); /* Reverted to the original dark transparent background */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 141, 0, 0.5);
+            border-radius: 1.5rem;
+            box-shadow: 0 0 30px rgba(255, 141, 0, 0.2);
+            z-index: 2;
+        }
+        
+        /* Particle Canvas Style */
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
 
-    <title>پایان سهمیه</title>
+        /* The key styles for the transparent font with wavy gradient */
+        .transparent-text {
+            color: transparent;
+            /* This is the wavy gradient. We will animate this background position */
+            background-image: linear-gradient(to right, #1a1a1a, #555555, #ffffff, #1a1a1a);
+            background-size: 400% 400%;
+            animation: gradient-wavy 10s ease infinite;
 
-    <script src="https://cdn.tailwindcss.com"></script>
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            text-shadow: none;
+        }
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-
-    <style>
-
-        /* --- Base & Fonts --- */
-
-        html { scroll-behavior: smooth; }
-
-        body {
-
-            font-family: 'Vazirmatn', sans-serif;
-
-            background-color: #000000;
-
-            color: #c9d1d9;
-
-            display: flex;
-
-            flex-direction: column;
-
-            min-height: 100vh;
-
-            overflow: hidden; /* Prevent scrollbars from the canvas */
-
-        }
-
-        main {
-
-            flex-grow: 1;
-
-            position: relative; /* Needed for z-index context */
-
-            z-index: 1;
-
-            /* Center the content vertically and horizontally */
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-        }
-
-
-
-        /* --- Framed UI Card Style --- */
-
-        .message-card {
-
-            background-color: rgba(10, 10, 10, 0.75);
-
-            backdrop-filter: blur(12px);
-
-            -webkit-backdrop-filter: blur(12px);
-
-            border: 1px solid rgba(255, 141, 0, 0.5);
-
-            border-radius: 1.5rem;
-
-            box-shadow: 0 0 30px rgba(255, 141, 0, 0.2);
-
-        }
-
-
-
-        /* --- Particle Canvas Style --- */
-
-        #background-canvas {
-
-            position: fixed;
-
-            top: 0;
-
-            left: 0;
-
-            width: 100vw;
-
-            height: 100vh;
-
-            z-index: 0; /* Behind main content */
-
-            pointer-events: none;
-
-        }
-
-    </style>
-
+        /* Keyframes for the wavy gradient animation */
+        @keyframes gradient-wavy {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
 </head>
-
 <body>
 
-
-
-    <!-- Canvas for background effects -->
-
-    <canvas id="background-canvas"></canvas>
-
-
-
-    <main class="container mx-auto px-4 w-full">
-
-        
-
-        <!-- Message Box -->
-
-        <div class="message-card p-8 md:p-12 max-w-2xl text-center">
-
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-200 leading-relaxed">
-
-                 سهمیه توکن عمومی امروز به پایان رسید و حجم درخواست به سرور برآورد شد پروژه بعد از کالیبراسیون سهمیه با با لاگین اختصاصی در دسترس قرار خواهد گرفت
-
-            </h1>
-
-        </div>
-
-
-
-    </main>
-
-
-
-    <script>
-
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // --- Particle Effect Logic (Copied from your original site) ---
-
-            const particleCanvas = document.getElementById('background-canvas');
-
-            const particleCtx = particleCanvas.getContext('2d');
-
-            let particleArray = [];
-
-
-
-            const particleConfig = {
-
-                particleCount: 80,
-
-                maxVelocity: 0.8,
-
-                connectionDistance: 130,
-
-                particleSize: 2,
-
-                particleColor: 'rgba(255, 141, 0, 0.7)',
-
-            };
-
-
-
-            function resizeParticleCanvas() {
-
-                particleCanvas.width = window.innerWidth;
-
-                particleCanvas.height = window.innerHeight;
-
-                createParticleArray(); 
-
-            }
-
-            window.addEventListener('resize', resizeParticleCanvas);
-
-            
-
-            class Particle {
-
-                constructor() {
-
-                    this.x = Math.random() * particleCanvas.width;
-
-                    this.y = Math.random() * particleCanvas.height;
-
-                    this.vx = (Math.random() - 0.5) * particleConfig.maxVelocity;
-
-                    this.vy = (Math.random() - 0.5) * particleConfig.maxVelocity;
-
-                }
-
-                update() {
-
-                    this.x += this.vx;
-
-                    this.y += this.vy;
-
-                    if (this.x < 0 || this.x > particleCanvas.width) this.vx *= -1;
-
-                    if (this.y < 0 || this.y > particleCanvas.height) this.vy *= -1;
-
-                }
-
-                draw() {
-
-                    particleCtx.beginPath();
-
-                    particleCtx.arc(this.x, this.y, particleConfig.particleSize, 0, Math.PI * 2);
-
-                    particleCtx.fillStyle = particleConfig.particleColor;
-
-                    particleCtx.fill();
-
-                }
-
-            }
-
-
-
-            function createParticleArray() {
-
-                particleArray = [];
-
-                for (let i = 0; i < particleConfig.particleCount; i++) {
-
-                    particleArray.push(new Particle());
-
-                }
-
-            }
-
-
-
-            function connectParticles() {
-
-                for (let i = 0; i < particleArray.length; i++) {
-
-                    for (let j = i + 1; j < particleArray.length; j++) {
-
-                        const distance = Math.sqrt(
-
-                            (particleArray[i].x - particleArray[j].x) ** 2 +
-
-                            (particleArray[i].y - particleArray[j].y) ** 2
-
-                        );
-
-                        if (distance < particleConfig.connectionDistance) {
-
-                            particleCtx.beginPath();
-
-                            particleCtx.moveTo(particleArray[i].x, particleArray[i].y);
-
-                            particleCtx.lineTo(particleArray[j].x, particleArray[j].y);
-
-                            particleCtx.strokeStyle = `rgba(255, 141, 0, ${1 - distance / particleConfig.connectionDistance})`;
-
-                            particleCtx.lineWidth = 0.5;
-
-                            particleCtx.stroke();
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-
-
-            function animateParticles() {
-
-                particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-
-                particleArray.forEach(p => {
-
-                    p.update();
-
-                    p.draw();
-
-                });
-
-                connectParticles();
-
-                requestAnimationFrame(animateParticles);
-
-            }
-
-
-
-            resizeParticleCanvas();
-
-            animateParticles();
-
-        });
-
-    </script>
-
+    <!-- Canvas for background effects -->
+    <canvas id="background-canvas"></canvas>
+
+    <main class="container mx-auto px-4 w-full">
+        
+        <!-- Message Box -->
+        <div class="message-card p-8 md:p-12 max-w-2xl text-center">
+            <!-- Apply the transparent-text class with the new gradient -->
+            <h1 class="transparent-text text-2xl md:text-3xl leading-relaxed">
+                سهمیه توکن عمومی امروز به پایان رسید و حجم درخواست به سرور برآورد شد پروژه بعد از کالیبراسیون سهمیه با با لاگین اختصاصی در دسترس قرار خواهد گرفت
+            </h1>
+        </div>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Particle Effect Logic ---
+            const particleCanvas = document.getElementById('background-canvas');
+            const particleCtx = particleCanvas.getContext('2d');
+            let particleArray = [];
+
+            const particleConfig = {
+                particleCount: 80,
+                maxVelocity: 0.8,
+                connectionDistance: 130,
+                particleSize: 2,
+                particleColor: 'rgba(255, 141, 0, 0.7)',
+            };
+
+            function resizeParticleCanvas() {
+                particleCanvas.width = window.innerWidth;
+                particleCanvas.height = window.innerHeight;
+                createParticleArray(); 
+            }
+            window.addEventListener('resize', resizeParticleCanvas);
+            
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * particleCanvas.width;
+                    this.y = Math.random() * particleCanvas.height;
+                    this.vx = (Math.random() - 0.5) * particleConfig.maxVelocity;
+                    this.vy = (Math.random() - 0.5) * particleConfig.maxVelocity;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < 0 || this.x > particleCanvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > particleCanvas.height) this.vy *= -1;
+                }
+                draw() {
+                    particleCtx.beginPath();
+                    particleCtx.arc(this.x, this.y, particleConfig.particleSize, 0, Math.PI * 2);
+                    particleCtx.fillStyle = particleConfig.particleColor;
+                    particleCtx.fill();
+                }
+            }
+
+            function createParticleArray() {
+                particleArray = [];
+                for (let i = 0; i < particleConfig.particleCount; i++) {
+                    particleArray.push(new Particle());
+                }
+            }
+
+            function connectParticles() {
+                for (let i = 0; i < particleArray.length; i++) {
+                    for (let j = i + 1; j < particleArray.length; j++) {
+                        const distance = Math.sqrt(
+                            (particleArray[i].x - particleArray[j].x) ** 2 +
+                            (particleArray[i].y - particleArray[j].y) ** 2
+                        );
+                        if (distance < particleConfig.connectionDistance) {
+                            particleCtx.beginPath();
+                            particleCtx.moveTo(particleArray[i].x, particleArray[i].y);
+                            particleCtx.lineTo(particleArray[j].x, particleArray[j].y);
+                            particleCtx.strokeStyle = `rgba(255, 141, 0, ${1 - distance / particleConfig.connectionDistance})`;
+                            particleCtx.lineWidth = 0.5;
+                            particleCtx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animateParticles() {
+                particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+                particleArray.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                connectParticles();
+                requestAnimationFrame(animateParticles);
+            }
+
+            // Initial setup
+            resizeParticleCanvas();
+            animateParticles();
+        });
+    </script>
 </body>
-
-</html
+</html>

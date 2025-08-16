@@ -379,4 +379,234 @@
                             <div class="code-block my-4 rounded-lg bg-black/50 overflow-hidden border border-orange-500/20" dir="ltr">
                                 <div class="flex items-center justify-between bg-black/30 px-4 py-2 text-xs">
                                     <span class="text-gray-400 font-semibold">${language.toUpperCase()}</span>
-                                    <div clas
+                                    <div class="flex space-x-2 space-x-reverse">
+                                        <button class="copy-btn p-1.5 rounded hover:bg-gray-600/50 text-white" title="کپی"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                                        <button class="download-btn p-1.5 rounded hover:bg-gray-600/50 text-white" data-lang="${language}" title="دانلود"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                    </div>
+                                </div>
+                                <pre class="p-4 text-sm text-white overflow-x-auto"><code class="language-${language}">${code.trim().replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
+                            </div>`;
+                    })
+                    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-orange-300 font-bold">$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+                    .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="text-cyan-400 hover:underline">$1</a>')
+                    .replace(/^- (.*$)/gm, (match, content) => `<li class="mb-2 flex items-start"><span class="text-orange-400 mr-2 ml-2 mt-1.5 shrink-0">&bull;</span><span>${content}</span></li>`)
+                    .replace(/(<li.*>[\s\S]*?<\/li>)+/g, (match) => `<ul class="list-none my-4 pr-4">${match}</ul>`)
+                    .replace(/\n/g, '<br>');
+
+                return html + interactiveHtml;
+            }
+
+            function renderResponse(htmlContent, isUser = false) {
+                const bubbleWrapper = document.createElement('div');
+                bubbleWrapper.className = `flex items-start gap-3 chat-bubble ${isUser ? 'user-bubble justify-end' : 'ai-bubble'}`;
+                
+                let bubbleContent = isUser ? `
+                    <div class="shen-card p-4 shadow-md order-1">
+                        ${htmlContent}
+                    </div>
+                    <div class="w-10 h-10 bg-slate-700/50 rounded-full flex items-center justify-center order-2 shrink-0 border border-slate-600">
+                        <i data-lucide="user" class="text-slate-300"></i>
+                    </div>
+                ` : `
+                    <div class="shen-logo order-1">☬™</div>
+                    <div class="shen-card p-5 shadow-md order-2">
+                       ${htmlContent}
+                    </div>
+                `;
+
+                bubbleWrapper.innerHTML = bubbleContent;
+                chatContainer.appendChild(bubbleWrapper);
+                lucide.createIcons();
+
+                if (!isUser) setupInteractiveElements(bubbleWrapper);
+                bubbleWrapper.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+            
+            function setupInteractiveElements(bubble) {
+                bubble.querySelectorAll('.code-block').forEach(block => {
+                    const code = block.querySelector('code').innerText;
+                    const copyBtn = block.querySelector('.copy-btn');
+                    const downloadBtn = block.querySelector('.download-btn');
+                    
+                    copyBtn?.addEventListener('click', () => {
+                        const textArea = document.createElement("textarea");
+                        textArea.value = code;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        try {
+                            document.execCommand('copy');
+                            copyBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-green-400"></i>';
+                        } catch (err) {
+                            copyBtn.innerHTML = '<i data-lucide="x" class="w-4 h-4 text-red-400"></i>';
+                        }
+                        document.body.removeChild(textArea);
+                        lucide.createIcons();
+                        setTimeout(() => {
+                            copyBtn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i>';
+                            lucide.createIcons();
+                        }, 2000);
+                    });
+
+                    downloadBtn?.addEventListener('click', () => {
+                        const lang = downloadBtn.dataset.lang || 'txt';
+                        const blob = new Blob([code], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url; a.download = `shen-learner-code.${lang}`; a.click(); URL.revokeObjectURL(url);
+                    });
+                });
+
+                bubble.querySelectorAll('.choice-btn').forEach(btn => {
+                    btn.addEventListener('click', () => handleUserInteraction(btn.textContent, bubble));
+                });
+
+                bubble.querySelector('.input-form')?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const input = e.currentTarget.querySelector('textarea');
+                    if (input.value.trim()) handleUserInteraction(input.value, bubble);
+                });
+                
+                bubble.querySelector('.confirm-checkbox')?.addEventListener('change', (e) => {
+                    if (e.target.checked) handleUserInteraction("انجام دادم و تایید میکنم.", bubble, true);
+                });
+            }
+
+            function updateModeUI() {
+                modeButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.mode === currentMode);
+                });
+                inputArea.innerHTML = '';
+                const template = document.getElementById(`template-${currentMode.replace(/ /g, '-')}`);
+                if (template) {
+                    inputArea.appendChild(template.content.cloneNode(true));
+                }
+                if (currentMode === 'آموزش') {
+                    const subTopicContainer = document.getElementById('sub-topic-container');
+                    const trainingButtons = document.querySelectorAll('.training-type-btn');
+                    trainingButtons.forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            trainingButtons.forEach(b => b.classList.remove('active'));
+                            e.currentTarget.classList.add('active');
+                            subTopicContainer.classList.toggle('hidden', e.currentTarget.dataset.value !== 'مقطعی');
+                        });
+                    });
+                }
+            }
+
+            async function handleStart() {
+                let initialPrompt = '';
+                let userMessage = '';
+                
+                const systemInstruction = `تو یک مربی IT فوق‌العاده حرفه‌ای و دقیق به نام 'SHΞN™ learner' هستی. تمام پردازش‌ها در '☬SHΞN™core' انجام می‌شود. هرگز هویت خود را به عنوان هوش مصنوعی فاش نکن. لحن تو باید مستقیم، حرفه‌ای، کارآمد و راهنما باشد. همیشه مکالمه را به صورت قدم به قدم و تعاملی پیش ببر. از ارائه پاسخ‌های طولانی و یکجا خودداری کن. **قانون اصلی و غیرقابل تخطی:** همیشه به اطلاعاتی که کاربر ارائه می‌دهد (مانند نام نرم‌افزار یا سیستم‌عامل) دقت کامل کن درک کن و آن را مبنای پاسخ خود قرار بده. هرگز نرم‌افزار کاربر را با یک نرم‌افزار معروف‌تر اشتباه نگیر. پاسخ تو باید دقیقاً برای ابزار ذکر شده توسط کاربر باشد. منطقی دقیق حساس و مستند به زبان فارسی روان با لحن محاوره به طوری که خشک و خسته کننده نباشد با کاربر ارتباط برقرار می‌کنی ، اگر جایی نیاز به نصب نرم افزار یا دسترسی به مطلب خاصی بود هایپرلینک مستقیم ایجاد میکنی برای کاربر در معرفی های نرم افزار یا سرویسهای آنلاین سعی کن اسم اون ابزار یا سرویس رو هایپرلینک کنی به لینک مستقیم دانلود سا صفحه ی رسمیش ،  برای دریافت پاسخ از کاربر، از فرمت‌های خاص استفاده کن: برای سوالات بله/خیر از [YESNO:سوال شما]، برای سوالات چندگزینه‌ای از [CHOICE:گزینه ۱|گزینه ۲] و برای دریافت متن از [INPUT:سوال شما] استفاده کن. اگر هیچکدام لازم نبود، پاسخ را عادی و بدون تگ بده تا یک تیک تایید نمایش داده شود. همیشه با یک سوال تشخیصی یا یک قدم عملی شروع کن.`;
+                chatHistory = [{ role: "user", parts: [{ text: systemInstruction }] }];
+
+                const getInputValue = (id) => document.getElementById(id)?.value.trim() || '';
+
+                switch (currentMode) {
+                    case 'آموزش':
+                        const topic = getInputValue('topic');
+                        if (!topic) { showAlert('لطفاً مبحث آموزش را مشخص کنید.'); return; }
+                        const subTopic = getInputValue('sub-topic');
+                        const trainingTypeBtn = document.querySelector('.training-type-btn.active');
+                        const trainingType = trainingTypeBtn ? trainingTypeBtn.dataset.value : 'شروع کلی';
+                        userMessage = `مبحث: ${topic}`;
+                        let promptDetails = '';
+                        if (trainingType === 'مقطعی' && subTopic) {
+                            promptDetails = ` مبحث خاص مورد نظر من '${subTopic}' است.`;
+                            userMessage += ` | بخش: ${subTopic}`;
+                        } else {
+                             userMessage += ` | نوع: ${trainingType}`;
+                        }
+                        initialPrompt = `قصد آموزش مبحث '${topic}' را دارم. نوع آموزش: '${trainingType}'.${promptDetails} لطفاً اولین قدم برای شروع یادگیری را به من بگو.`;
+                        break;
+                    case 'تشریح مشکل':
+                        const problemDesc = getInputValue('problem-desc');
+                        if (!problemDesc) { showAlert('لطفاً مشکل خود را تشریح کنید.'); return; }
+                        userMessage = problemDesc;
+                        initialPrompt = `من با این مشکل مواجه شده‌ام: '${problemDesc}'. لطفاً برای تشخیص دقیق، اولین و مهم‌ترین سوالی که باید بپرسی را مطرح کن تا مشکل را ریشه‌یابی کنیم.`;
+                        break;
+                    case 'تحلیل ارور':
+                        const errorSource = getInputValue('error-source');
+                        const errorText = getInputValue('error-text');
+                        if (!errorText) { showAlert('لطفاً متن ارور را وارد کنید.'); return; }
+                        userMessage = `ارور در ${errorSource || 'برنامه'}:\n${errorText}`;
+                        initialPrompt = `من در '${errorSource || 'یک برنامه'}' با این ارور مواجه شدم: \n\`\`\`\n${errorText}\n\`\`\`\n لطفاً به زبان ساده توضیح بده این ارور به چه معناست و اولین قدم عملی برای حل آن چیست.`;
+                        break;
+                }
+
+                if (initialPrompt) {
+                    chatTitle.textContent = currentMode;
+                    initialView.classList.add('hidden');
+                    chatView.classList.remove('hidden');
+                    renderResponse(`<p>${userMessage.replace(/\n/g, '<br>')}</p>`, true);
+                    processAndDisplayResponse(initialPrompt);
+                }
+            }
+            
+            // --- Particle Effect Logic (No changes needed here) ---
+            const particleCanvas = document.getElementById('background-canvas');
+            const particleCtx = particleCanvas.getContext('2d');
+            let particleArray = [];
+            const particleConfig = {
+                particleCount: 80, maxVelocity: 0.8, connectionDistance: 130,
+                particleSize: 2, particleColor: 'rgba(255, 141, 0, 0.7)',
+            };
+            function resizeParticleCanvas() {
+                particleCanvas.width = window.innerWidth;
+                particleCanvas.height = window.innerHeight;
+                createParticleArray(); 
+            }
+            window.addEventListener('resize', resizeParticleCanvas);
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * particleCanvas.width;
+                    this.y = Math.random() * particleCanvas.height;
+                    this.vx = (Math.random() - 0.5) * particleConfig.maxVelocity;
+                    this.vy = (Math.random() - 0.5) * particleConfig.maxVelocity;
+                }
+                update() {
+                    this.x += this.vx; this.y += this.vy;
+                    if (this.x < 0 || this.x > particleCanvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > particleCanvas.height) this.vy *= -1;
+                }
+                draw() {
+                    particleCtx.beginPath();
+                    particleCtx.arc(this.x, this.y, particleConfig.particleSize, 0, Math.PI * 2);
+                    particleCtx.fillStyle = particleConfig.particleColor;
+                    particleCtx.fill();
+                }
+            }
+            function createParticleArray() {
+                particleArray = [];
+                for (let i = 0; i < particleConfig.particleCount; i++) {
+                    particleArray.push(new Particle());
+                }
+            }
+            function connectParticles() {
+                for (let i = 0; i < particleArray.length; i++) {
+                    for (let j = i + 1; j < particleArray.length; j++) {
+                        const distance = Math.sqrt((particleArray[i].x - particleArray[j].x) ** 2 + (particleArray[i].y - particleArray[j].y) ** 2);
+                        if (distance < particleConfig.connectionDistance) {
+                            particleCtx.beginPath();
+                            particleCtx.moveTo(particleArray[i].x, particleArray[i].y);
+                            particleCtx.lineTo(particleArray[j].x, particleArray[j].y);
+                            particleCtx.strokeStyle = `rgba(255, 141, 0, ${1 - distance / particleConfig.connectionDistance})`;
+                            particleCtx.lineWidth = 0.5;
+                            particleCtx.stroke();
+                        }
+                    }
+                }
+            }
+            function animateParticles() {
+                particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+                particleArray.forEach(p => { p.update(); p.draw(); });
+                connectParticles();
+                requestAnimationFrame(animateParticles);
+            }
+            resizeParticleCanvas();
+            animateParticles();
+        });
+    </script>
+</body>
+</html>

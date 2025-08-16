@@ -1,0 +1,9 @@
+# netlify.toml
+
+[build]
+  # این به نتلیفای می‌گوید که پوشه توابع شما کجاست.
+  functions = "functions"
+
+# این بخش برای اجرای پروژه به صورت لوکال با Netlify CLI مفید است.
+[functions]
+  node_bundler = "esbuild"

@@ -113,7 +113,7 @@
             flex-shrink: 0;
         }
         
-        /* --- Loading Indicator Style --- */
+        /* --- FIXED: Loading Indicator Style --- */
         .loading-gradient-wave {
             font-family: monospace;
             white-space: nowrap;
@@ -252,6 +252,7 @@
             // --- Initialization ---
             lucide.createIcons();
             updateModeUI();
+            // FIXED: Set loading text on init
             document.getElementById('loading-text-container').textContent = "☬SHΞN™ core processor analysis...";
 
 
@@ -377,7 +378,7 @@
 
                 const yesNoMatch = text.match(/\[YESNO:(.*?)\]/);
                 const choiceMatch = text.match(/\[CHOICE:(.*?)\]/);
-                const inputMatch = text.match(/\[INPUT\]/);
+                const inputMatch = text.match(/\[INPUT:(.*?)\]/);
 
                 if (yesNoMatch) {
                     mainText = text.replace(yesNoMatch[0], `<p class="mt-4 font-semibold">${yesNoMatch[1]}</p>`).trim();
@@ -390,9 +391,10 @@
                     const options = choiceMatch[1].split('|').map(o => o.trim());
                     interactiveHtml = `<div class="mt-4 flex flex-wrap gap-3">${options.map(opt => `<button class="choice-btn border border-orange-500/50 bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 px-4 py-2 rounded-lg transition-colors">${opt}</button>`).join('')}</div>`;
                 } else if (inputMatch) {
+                    const placeholderText = inputMatch[1] || "پاسخ خود را اینجا بنویسید...";
                     mainText = text.replace(inputMatch[0], '').trim();
                     interactiveHtml = `<form class="input-form mt-4 flex flex-col gap-3">
-                        <textarea placeholder="پاسخ خود را اینجا بنویسید..." class="shen-input h-24"></textarea>
+                        <textarea placeholder="${placeholderText}" class="shen-input h-24"></textarea>
                         <button type="submit" class="bg-gradient-to-br from-[#ff4800] to-[#ff8d00] text-black p-3 rounded-lg font-semibold w-full transition-all hover:shadow-lg hover:shadow-orange-500/30">ارسال پاسخ</button>
                     </form>`;
                 } else if (!text.includes("جمع‌بندی نهایی") && !text.includes("موفق باشید")) {
@@ -530,7 +532,7 @@
                 let initialPrompt = '';
                 let userMessage = '';
                 
-                const systemInstruction = `تو یک مربی IT فوق‌العاده حرفه‌ای و دقیق به نام 'SHΞN™ learner' هستی. تمام پردازش‌ها در '☬SHΞN™core' انجام می‌شود. هرگز هویت خود را به عنوان هوش مصنوعی فاش نکن. لحن تو باید مستقیم، حرفه‌ای، کارآمد و راهنما باشد. همیشه مکالمه را به صورت قدم به قدم و تعاملی پیش ببر. از ارائه پاسخ‌های طولانی و یکجا خودداری کن. **قانون اصلی و غیرقابل تخطی:** همیشه به اطلاعاتی که کاربر ارائه می‌دهد (مانند نام نرم‌افزار یا سیستم‌عامل) دقت کامل کن درک کن و آن را مبنای پاسخ خود قرار بده. هرگز نرم‌افزار کاربر را با یک نرم‌افزار معروف‌تر اشتباه نگیر. پاسخ تو باید دقیقاً برای ابزار ذکر شده توسط کاربر باشد. منطقی دقیق حساس و مستند به زبان فارسی روان با لحن محاوره به طوری که خشک و خسته کننده نباشد با کاربر ارتباط برقرار می‌کنی برای دریافت پاسخ از کاربر، از فرمت‌های خاص استفاده کن: برای سوالات بله/خیر از [YESNO:سوال شما]، برای سوالات چندگزینه‌ای از [CHOICE:گزینه ۱|گزینه ۲] و برای دریافت متن از [INPUT] استفاده کن. اگر هیچکدام لازم نبود، پاسخ را عادی و بدون تگ بده تا یک تیک تایید نمایش داده شود. همیشه با یک سوال تشخیصی یا یک قدم عملی شروع کن.`;
+                const systemInstruction = `تو یک مربی IT فوق‌العاده حرفه‌ای و دقیق به نام 'SHΞN™ learner' هستی. تمام پردازش‌ها در '☬SHΞN™core' انجام می‌شود. هرگز هویت خود را به عنوان هوش مصنوعی فاش نکن. لحن تو باید مستقیم، حرفه‌ای، کارآمد و راهنما باشد. همیشه مکالمه را به صورت قدم به قدم و تعاملی پیش ببر. از ارائه پاسخ‌های طولانی و یکجا خودداری کن. **قانون اصلی و غیرقابل تخطی:** همیشه به اطلاعاتی که کاربر ارائه می‌دهد (مانند نام نرم‌افزار یا سیستم‌عامل) دقت کامل کن درک کن و آن را مبنای پاسخ خود قرار بده. هرگز نرم‌افزار کاربر را با یک نرم‌افزار معروف‌تر اشتباه نگیر. پاسخ تو باید دقیقاً برای ابزار ذکر شده توسط کاربر باشد. منطقی دقیق حساس و مستند به زبان فارسی روان با لحن محاوره به طوری که خشک و خسته کننده نباشد با کاربر ارتباط برقرار می‌کنی برای دریافت پاسخ از کاربر، از فرمت‌های خاص استفاده کن: برای سوالات بله/خیر از [YESNO:سوال شما]، برای سوالات چندگزینه‌ای از [CHOICE:گزینه ۱|گزینه ۲] و برای دریافت متن از [INPUT:سوال شما] استفاده کن. اگر هیچکدام لازم نبود، پاسخ را عادی و بدون تگ بده تا یک تیک تایید نمایش داده شود. همیشه با یک سوال تشخیصی یا یک قدم عملی شروع کن.`;
                 chatHistory = [{ role: "user", parts: [{ text: systemInstruction }] }];
 
                 const getInputValue = (id) => document.getElementById(id)?.value.trim() || '';

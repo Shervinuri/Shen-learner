@@ -140,16 +140,16 @@
 
             <div class="shen-card p-6 md:p-8">
                 <div class="w-full bg-black/20 rounded-full p-1.5 flex flex-row items-center justify-between font-bold mb-8 shadow-inner">
-                    <button data-mode="آموزش" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base">آموزش</button>
-                    <button data-mode="تشریح مشکل" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base active">تشریح مشکل</button>
-                    <button data-mode="تحلیل ارور" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base">تحلیل ارور</button>
+                    <button data-mode="آموزش" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base">یادم بده</button>
+                    <button data-mode="تشریح مشکل" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base active">مشکل خوردم</button>
+                    <button data-mode="تحلیل ارور" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base">خطای چیه ؟</button>
                 </div>
 
                 <div id="input-area" class="space-y-6"></div>
 
                 <div class="text-center mt-8">
                     <button id="start-btn" class="bg-gradient-to-br from-[#ff4800] to-[#ff8d00] text-black font-bold py-3 px-12 rounded-full text-lg hover:from-[#ff8d00] hover:to-[#ffea00] transition-all duration-300 transform hover:scale-105 shadow-lg shadow-orange-500/30">
-                        شروع کن
+                        بریـم بـراش
                     </button>
                 </div>
             </div>
@@ -165,14 +165,14 @@
                 <div id="floating-menu" class="absolute top-14 right-0 bg-black/80 border border-orange-500/50 backdrop-blur-md rounded-lg shadow-xl p-2 space-y-1 origin-top-right transition-all duration-200 transform scale-95 opacity-0 pointer-events-none">
                     <button id="home-btn" class="w-full flex items-center space-x-2 space-x-reverse p-2 rounded-md hover:bg-orange-500/10 transition-colors text-right text-orange-300">
                         <i data-lucide="home" class="w-5 h-5"></i>
-                        <span>شروع مجدد</span>
+                        <span>بزنی میری اول داستان</span>
                     </button>
                 </div>
             </div>
             
             <div class="text-center pt-4 pb-8">
                 <h2 class="text-xl font-bold" id="chat-title">تشریح مشکل</h2>
-                <p class="text-sm text-gray-400">تالار آموزش خصوصی  ☬SHΞN™core</p>
+                <p class="text-sm text-gray-400">  لابراتوار تحلیل متصل شد به  ☬SHΞN™core</p>
             </div>
 
             <div id="chat-container" class="flex flex-col space-y-6 px-1"></div>
@@ -253,7 +253,7 @@
             lucide.createIcons();
             updateModeUI();
             // FIXED: Set loading text on init
-            document.getElementById('loading-text-container').textContent = "☬SHΞN™ core processor analysis...";
+            document.getElementById('loading-text-container').textContent = "SHΞN™ processor establishing...";
 
 
             // --- Event Listeners ---

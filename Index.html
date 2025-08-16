@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>informa☬SHΞN™</title>
+    <title>iNFORMA☬SHΞN™</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- ADDED Orbitron FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <!-- Icon Library -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -24,6 +25,12 @@
         }
         main {
             flex-grow: 1;
+            position: relative; /* Needed for z-index context */
+            z-index: 1;
+        }
+        /* ADDED FONT UTILITY CLASS */
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
         }
 
         /* --- Neon Ember Theme --- */
@@ -38,6 +45,13 @@
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
+        }
+
+        /* UPDATED GRADIENT CLASS */
+        .gradient-black-gray {
+            background: linear-gradient(to right, #a0a0a0, #444444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         /* --- Framed UI Card --- */
@@ -155,18 +169,25 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: -1;
+            z-index: 0; /* Behind main content */
             pointer-events: none;
         }
     </style>
 </head>
 <body class="pt-8 sm:pt-16">
 
-    <main class="container mx-auto px-4 w-full relative">
+    <!-- Canvas for background effects -->
+    <canvas id="background-canvas"></canvas>
+
+    <main class="container mx-auto px-4 w-full">
         <!-- Initial View -->
         <div id="initial-view" class="view max-w-3xl mx-auto">
-            <div class="text-center mb-8">
-                <h1 class="text-3xl md:text-4xl font-black animated-gradient-text">☬SHΞN™ learner</h1>
+            <!-- HEADER UPDATED -->
+            <div class="text-center mb-12">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-black font-orbitron tracking-wide sm:tracking-wider">
+                    <span class="gradient-black-gray">iNFORMA</span><span class="animated-gradient-text">SHΞN</span>
+                </h1>
+                <p class="text-sm md:text-base text-gray-300 mt-3">اولین لابراتوار دانشگاهی هسته مستقل شین</p>
             </div>
 
             <div class="shen-card p-6 md:p-8">
@@ -203,7 +224,7 @@
             
             <div class="text-center pt-4 pb-8">
                 <h2 class="text-xl font-bold" id="chat-title">تشریح مشکل</h2>
-                <p class="text-sm text-gray-400">  لابراتوار تحلیل متصل شد به  ☬SHΞN™core</p>
+                <p class="text-sm text-gray-400"> لابراتوار تحلیل متصل شد به ☬SHΞN™core</p>
             </div>
 
             <div id="chat-container" class="flex flex-col space-y-6 px-1"></div>
@@ -217,12 +238,9 @@
         </div>
     </main>
 
-    <footer class="py-6 mt-16 text-center text-sm">
+    <footer class="py-6 mt-16 text-center text-sm relative z-10">
         <p class="animated-gradient-text font-semibold">Exclusive ☬SHΞN™ made</p>
     </footer>
-
-    <!-- Canvas for background effects -->
-    <canvas id="background-canvas"></canvas>
 
     <!-- Input Templates -->
     <template id="template-آموزش">
@@ -233,7 +251,7 @@
                 <button data-value="مقطعی" class="training-type-btn flex-1 p-3 rounded-md font-semibold text-xs sm:text-sm transition-colors">مبحث مشخص</button>
             </div>
             <div id="sub-topic-container" class="hidden">
-                <input type="text" id="sub-topic" class="shen-input" placeholder="  کدوم بخش؟ مثلا: وبهوک ">
+                <input type="text" id="sub-topic" class="shen-input" placeholder=" کدوم بخش؟ مثلا: وبهوک ">
             </div>
         </div>
     </template>
@@ -266,17 +284,10 @@
             let currentMode = 'تشریح مشکل';
             let chatHistory = [];
             
-            // --- Gemini API Key Rotation ---
-            const geminiApiKeys = [
-                "AIzaSyDQZKYz797HR7phWFjd3ezKqM4dESUsZ4g",
-                "AIzaSyDoBLOC0vcOZYcYLxRtiybJaWaHMvNTSts",
-                "AIzaSyBVOBEgepPZpXwezYp8_VMBjjMBrsYhbAE",
-                "AIzaSyA8BrHGxf1MSNIXrrTSFhgwp9GjIPaEKtg",
-                "AIzaSyCnsRDSNELLUL-qsv71mMrxdXducwxvcPM"
-            ];
+            // --- FIXED: Restored API Key Rotation and Fallback ---
+            const geminiApiKeys = [""]; // Start with the auto-injected key
             let currentGeminiKeyIndex = 0;
 
-            // --- Fallback Core Configuration ---
             const OPENROUTER_CONFIG = {
                 apiKey: "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",
                 modelId: "google/gemma-7b-it",
@@ -286,7 +297,7 @@
             // --- Initialization ---
             lucide.createIcons();
             updateModeUI();
-            document.getElementById('loading-text-container').textContent = "[ ☬SHΞN™core ]";
+            document.getElementById('loading-text-container').textContent = "[ ☬SHΞN™core thinking... ]";
 
 
             // --- Event Listeners ---
@@ -314,7 +325,7 @@
                 }
             });
 
-            // --- API Call Logic with Fallback ---
+            // --- FIXED: Restored Robust API Call Logic with Fallback ---
             async function callApi(prompt) {
                 loadingIndicator.classList.remove('hidden');
                 chatHistory.push({ role: "user", parts: [{ text: prompt }] });
@@ -322,7 +333,7 @@
                 try {
                     return await callPrimaryCore();
                 } catch (primaryError) {
-                    console.warn("All primary core keys failed. Switching to fallback.", primaryError.message);
+                    console.warn("Primary core failed. Switching to fallback.", primaryError.message);
                     try {
                         return await callFallbackCore();
                     } catch (fallbackError) {
@@ -334,7 +345,6 @@
                 }
             }
 
-            // --- Primary Core with Key Rotation ---
             async function callPrimaryCore() {
                 const payload = { contents: chatHistory };
                 
@@ -347,8 +357,8 @@
                     try {
                         const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                         if (!response.ok) {
-                            console.warn(`Gemini key ending in ...${apiKey.slice(-4)} failed with status ${response.status}`);
-                            continue;
+                            console.warn(`Gemini key ... failed with status ${response.status}`);
+                            continue; // Try next key
                         }
                         
                         const result = await response.json();
@@ -358,7 +368,7 @@
                             return text;
                         }
                     } catch (networkError) {
-                        console.warn(`Network error with Gemini key ending in ...${apiKey.slice(-4)}:`, networkError.message);
+                        console.warn(`Network error with a Gemini key:`, networkError.message);
                     }
                 }
                 throw new Error("All primary core API keys failed.");
@@ -378,7 +388,7 @@
                     chatHistory.push({ role: "model", parts: [{ text: text }] });
                     return text;
                 }
-                throw new Error("پاسخ نامعتبر از ☬SHΞN™core دریافت شد.");
+                throw new Error("پاسخ نامعتبر از هسته پشتیبان دریافت شد.");
             }
             
             async function processAndDisplayResponse(prompt) {
@@ -611,125 +621,84 @@
             }
             
             // --- Particle Effect Logic ---
-            const canvas = document.getElementById('background-canvas');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-            let activeBounds = null;
+            const particleCanvas = document.getElementById('background-canvas');
+            const particleCtx = particleCanvas.getContext('2d');
+            let particleArray = [];
 
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+            const particleConfig = {
+                particleCount: 80,
+                maxVelocity: 0.8,
+                connectionDistance: 130,
+                particleSize: 2,
+                particleColor: 'rgba(255, 141, 0, 0.7)',
+            };
+
+            function resizeParticleCanvas() {
+                particleCanvas.width = window.innerWidth;
+                particleCanvas.height = window.innerHeight;
+                createParticleArray(); 
             }
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
-
+            window.addEventListener('resize', resizeParticleCanvas);
+            
             class Particle {
-                constructor(x, y, vx, vy) {
-                    this.x = x;
-                    this.y = y;
-                    this.vx = vx;
-                    this.vy = vy;
-                    this.radius = Math.random() * 2 + 1;
-                    this.maxBounces = 5;
-                    this.bounces = 0;
-                    this.color = `rgba(255, 141, 0, ${1})`;
+                constructor() {
+                    this.x = Math.random() * particleCanvas.width;
+                    this.y = Math.random() * particleCanvas.height;
+                    this.vx = (Math.random() - 0.5) * particleConfig.maxVelocity;
+                    this.vy = (Math.random() - 0.5) * particleConfig.maxVelocity;
                 }
-
-                update(bounds) {
+                update() {
                     this.x += this.vx;
                     this.y += this.vy;
-
-                    let bounced = false;
-                    // Bounce off screen edges
-                    if (this.x < 0 || this.x > canvas.width) {
-                        this.vx *= -1;
-                        bounced = true;
-                    }
-                    if (this.y < 0 || this.y > canvas.height) {
-                        this.vy *= -1;
-                        bounced = true;
-                    }
-
-                    // Bounce off the main card
-                    if (bounds && this.x > bounds.left && this.x < bounds.right && this.y > bounds.top && this.y < bounds.bottom) {
-                        const prevX = this.x - this.vx;
-                        const prevY = this.y - this.vy;
-                        
-                        if (prevX <= bounds.left || prevX >= bounds.right) {
-                           this.vx *= -1;
-                        }
-                        if (prevY <= bounds.top || prevY >= bounds.bottom) {
-                           this.vy *= -1;
-                        }
-                        this.x = prevX; // Move out of bounds to prevent getting stuck
-                        this.y = prevY;
-                        bounced = true;
-                    }
-                    
-                    if (bounced) {
-                        this.bounces++;
-                        const opacity = 1 - (this.bounces / this.maxBounces);
-                        this.color = `rgba(255, 141, 0, ${opacity})`;
-                    }
+                    if (this.x < 0 || this.x > particleCanvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > particleCanvas.height) this.vy *= -1;
                 }
-
                 draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.shadowColor = this.color;
-                    ctx.shadowBlur = 10;
-                    ctx.fill();
+                    particleCtx.beginPath();
+                    particleCtx.arc(this.x, this.y, particleConfig.particleSize, 0, Math.PI * 2);
+                    particleCtx.fillStyle = particleConfig.particleColor;
+                    particleCtx.fill();
                 }
             }
 
-            function spawnParticle() {
-                let x, y;
-                const edge = Math.floor(Math.random() * 4);
-                if (edge === 0) { // Top
-                    x = Math.random() * canvas.width;
-                    y = -5;
-                } else if (edge === 1) { // Right
-                    x = canvas.width + 5;
-                    y = Math.random() * canvas.height;
-                } else if (edge === 2) { // Bottom
-                    x = Math.random() * canvas.width;
-                    y = canvas.height + 5;
-                } else { // Left
-                    x = -5;
-                    y = Math.random() * canvas.height;
+            function createParticleArray() {
+                particleArray = [];
+                for (let i = 0; i < particleConfig.particleCount; i++) {
+                    particleArray.push(new Particle());
                 }
-
-                const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
-                const speed = Math.random() * 2 + 1;
-                const vx = Math.cos(angle) * speed;
-                const vy = Math.sin(angle) * speed;
-
-                particles.push(new Particle(x, y, vx, vy));
             }
 
-            function animate() {
-                // FIXED: Clear canvas instead of filling to make it transparent
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Update bounds of the main card
-                const mainCard = document.querySelector('#initial-view.view:not(.hidden) .shen-card') || document.querySelector('#chat-view.view:not(.hidden)');
-                activeBounds = mainCard ? mainCard.getBoundingClientRect() : null;
-                
-                if (Math.random() < 0.05 && particles.length < 50) { // Spawn rate & max particles
-                    spawnParticle();
+            function connectParticles() {
+                for (let i = 0; i < particleArray.length; i++) {
+                    for (let j = i + 1; j < particleArray.length; j++) {
+                        const distance = Math.sqrt(
+                            (particleArray[i].x - particleArray[j].x) ** 2 +
+                            (particleArray[i].y - particleArray[j].y) ** 2
+                        );
+                        if (distance < particleConfig.connectionDistance) {
+                            particleCtx.beginPath();
+                            particleCtx.moveTo(particleArray[i].x, particleArray[i].y);
+                            particleCtx.lineTo(particleArray[j].x, particleArray[j].y);
+                            particleCtx.strokeStyle = `rgba(255, 141, 0, ${1 - distance / particleConfig.connectionDistance})`;
+                            particleCtx.lineWidth = 0.5;
+                            particleCtx.stroke();
+                        }
+                    }
                 }
+            }
 
-                particles = particles.filter(p => {
-                    p.update(activeBounds);
+            function animateParticles() {
+                particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+                particleArray.forEach(p => {
+                    p.update();
                     p.draw();
-                    return p.bounces < p.maxBounces;
                 });
-                
-                requestAnimationFrame(animate);
+                connectParticles();
+                requestAnimationFrame(animateParticles);
             }
 
-            animate();
+            resizeParticleCanvas();
+            animateParticles();
         });
     </script>
 </body>

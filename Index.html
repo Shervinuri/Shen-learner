@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>☬SHΞN™ learner</title>
+    <title>informa☬SHΞN™</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,6 +20,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         main {
             flex-grow: 1;
@@ -86,6 +87,16 @@
             font-weight: 700;
             box-shadow: 0 0 15px rgba(255, 141, 0, 0.5);
         }
+        .training-type-btn {
+            border: 1px solid #444;
+        }
+        .training-type-btn.active {
+            background-color: #ff8d00 !important;
+            color: #000;
+            font-weight: 700;
+            border-color: #ff8d00;
+            box-shadow: 0 0 15px rgba(255, 141, 0, 0.5);
+        }
         .chat-bubble { 
             animation: slide-up 0.5s ease-out forwards;
             max-width: 95%;
@@ -114,6 +125,15 @@
         }
         
         /* --- FIXED: Loading Indicator Style --- */
+        #loading-indicator {
+            min-height: 4rem; /* Prevents layout shift */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #loading-indicator.hidden {
+            display: none;
+        }
         .loading-gradient-wave {
             font-family: monospace;
             white-space: nowrap;
@@ -126,6 +146,17 @@
         @keyframes loading-gradient-animation {
             0% { background-position: 150% 50%; }
             100% { background-position: -50% 50%; }
+        }
+
+        /* --- Particle Canvas Style --- */
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -179,7 +210,7 @@
 
             <!-- Updated Loading Indicator -->
             <div id="loading-indicator" class="hidden text-center py-8">
-                <div id="loading-text-container" class="loading-gradient-wave text-lg font-semibold">
+                <div id="loading-text-container" class="loading-gradient-wave text-base font-semibold">
                     <!-- Text will be set by JS -->
                 </div>
             </div>
@@ -190,16 +221,19 @@
         <p class="animated-gradient-text font-semibold">Exclusive ☬SHΞN™ made</p>
     </footer>
 
+    <!-- Canvas for background effects -->
+    <canvas id="background-canvas"></canvas>
+
     <!-- Input Templates -->
     <template id="template-آموزش">
         <div class="space-y-6">
-            <input type="text" id="topic" class="shen-input" placeholder="محتوای آموزش مثال:طراحی بات تلگرامی)">
+            <input type="text" id="topic" class="shen-input" placeholder="محتوا مثال:طراحی بات تلگرامی)">
             <div class="flex items-center bg-black/20 rounded-lg p-2 space-x-2 space-x-reverse">
-                <button data-value="شروع کلی" class="training-type-btn flex-1 p-3 rounded-md bg-orange-900/50 font-semibold text-xs sm:text-sm transition-colors">آموزش کلی مبتدی</button>
+                <button data-value="شروع کلی" class="training-type-btn flex-1 p-3 rounded-md font-semibold text-xs sm:text-sm transition-colors active">آموزش کلی</button>
                 <button data-value="مقطعی" class="training-type-btn flex-1 p-3 rounded-md font-semibold text-xs sm:text-sm transition-colors">مبحث مشخص</button>
             </div>
             <div id="sub-topic-container" class="hidden">
-                <input type="text" id="sub-topic" class="shen-input" placeholder="دقیقاً کدام بخش؟ (مثال: پروتکل TCP/IP در شبکه)">
+                <input type="text" id="sub-topic" class="shen-input" placeholder="  کدوم بخش؟ مثلا: وبهوک ">
             </div>
         </div>
     </template>
@@ -252,8 +286,7 @@
             // --- Initialization ---
             lucide.createIcons();
             updateModeUI();
-            // FIXED: Set loading text on init
-            document.getElementById('loading-text-container').textContent = "SHΞN™ processor establishing...";
+            document.getElementById('loading-text-container').textContent = "[ ☬SHΞN™core ]";
 
 
             // --- Event Listeners ---
@@ -356,7 +389,6 @@
 
             // --- Rendering and UI Functions ---
             
-            // FIXED: Re-added the missing handleUserInteraction function
             function handleUserInteraction(responseText, currentBubble, isCheckbox = false) {
                 renderResponse(`<p class="font-semibold">${responseText}</p>`, true);
                 currentBubble.querySelectorAll('button, input, textarea, .confirm-checkbox').forEach(el => {
@@ -511,7 +543,7 @@
                     btn.classList.toggle('active', btn.dataset.mode === currentMode);
                 });
                 inputArea.innerHTML = '';
-                const template = document.getElementById(`template-${currentMode.replace(' ', '-')}`);
+                const template = document.getElementById(`template-${currentMode.replace(/ /g, '-')}`);
                 if (template) {
                     inputArea.appendChild(template.content.cloneNode(true));
                 }
@@ -520,8 +552,8 @@
                     const trainingButtons = document.querySelectorAll('.training-type-btn');
                     trainingButtons.forEach(btn => {
                         btn.addEventListener('click', (e) => {
-                            trainingButtons.forEach(b => b.classList.remove('bg-orange-900/50'));
-                            e.currentTarget.classList.add('bg-orange-900/50');
+                            trainingButtons.forEach(b => b.classList.remove('active'));
+                            e.currentTarget.classList.add('active');
                             subTopicContainer.classList.toggle('hidden', e.currentTarget.dataset.value !== 'مقطعی');
                         });
                     });
@@ -542,7 +574,7 @@
                         const topic = getInputValue('topic');
                         if (!topic) { alert('لطفاً مبحث آموزش را مشخص کنید.'); return; }
                         const subTopic = getInputValue('sub-topic');
-                        const trainingTypeBtn = document.querySelector('.training-type-btn.bg-orange-900\\/50');
+                        const trainingTypeBtn = document.querySelector('.training-type-btn.active');
                         const trainingType = trainingTypeBtn ? trainingTypeBtn.dataset.value : 'شروع کلی';
                         userMessage = `مبحث: ${topic}`;
                         let promptDetails = '';
@@ -577,6 +609,127 @@
                     processAndDisplayResponse(initialPrompt);
                 }
             }
+            
+            // --- Particle Effect Logic ---
+            const canvas = document.getElementById('background-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let activeBounds = null;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            class Particle {
+                constructor(x, y, vx, vy) {
+                    this.x = x;
+                    this.y = y;
+                    this.vx = vx;
+                    this.vy = vy;
+                    this.radius = Math.random() * 2 + 1;
+                    this.maxBounces = 5;
+                    this.bounces = 0;
+                    this.color = `rgba(255, 141, 0, ${1})`;
+                }
+
+                update(bounds) {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    let bounced = false;
+                    // Bounce off screen edges
+                    if (this.x < 0 || this.x > canvas.width) {
+                        this.vx *= -1;
+                        bounced = true;
+                    }
+                    if (this.y < 0 || this.y > canvas.height) {
+                        this.vy *= -1;
+                        bounced = true;
+                    }
+
+                    // Bounce off the main card
+                    if (bounds && this.x > bounds.left && this.x < bounds.right && this.y > bounds.top && this.y < bounds.bottom) {
+                        const prevX = this.x - this.vx;
+                        const prevY = this.y - this.vy;
+                        
+                        if (prevX <= bounds.left || prevX >= bounds.right) {
+                           this.vx *= -1;
+                        }
+                        if (prevY <= bounds.top || prevY >= bounds.bottom) {
+                           this.vy *= -1;
+                        }
+                        this.x = prevX; // Move out of bounds to prevent getting stuck
+                        this.y = prevY;
+                        bounced = true;
+                    }
+                    
+                    if (bounced) {
+                        this.bounces++;
+                        const opacity = 1 - (this.bounces / this.maxBounces);
+                        this.color = `rgba(255, 141, 0, ${opacity})`;
+                    }
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowColor = this.color;
+                    ctx.shadowBlur = 10;
+                    ctx.fill();
+                }
+            }
+
+            function spawnParticle() {
+                let x, y;
+                const edge = Math.floor(Math.random() * 4);
+                if (edge === 0) { // Top
+                    x = Math.random() * canvas.width;
+                    y = -5;
+                } else if (edge === 1) { // Right
+                    x = canvas.width + 5;
+                    y = Math.random() * canvas.height;
+                } else if (edge === 2) { // Bottom
+                    x = Math.random() * canvas.width;
+                    y = canvas.height + 5;
+                } else { // Left
+                    x = -5;
+                    y = Math.random() * canvas.height;
+                }
+
+                const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
+                const speed = Math.random() * 2 + 1;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed;
+
+                particles.push(new Particle(x, y, vx, vy));
+            }
+
+            function animate() {
+                // FIXED: Clear canvas instead of filling to make it transparent
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Update bounds of the main card
+                const mainCard = document.querySelector('#initial-view.view:not(.hidden) .shen-card') || document.querySelector('#chat-view.view:not(.hidden)');
+                activeBounds = mainCard ? mainCard.getBoundingClientRect() : null;
+                
+                if (Math.random() < 0.05 && particles.length < 50) { // Spawn rate & max particles
+                    spawnParticle();
+                }
+
+                particles = particles.filter(p => {
+                    p.update(activeBounds);
+                    p.draw();
+                    return p.bounces < p.maxBounces;
+                });
+                
+                requestAnimationFrame(animate);
+            }
+
+            animate();
         });
     </script>
 </body>

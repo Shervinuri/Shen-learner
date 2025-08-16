@@ -296,7 +296,7 @@
             let currentGeminiKeyIndex = 0;
 
             const OPENROUTER_CONFIG = {
-                apiKey: "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",
+                apiKey: "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",
                 modelId: "google/gemma-7b-it",
                 apiUrl: "https://openrouter.ai/api/v1/chat/completions"
             };
@@ -345,8 +345,6 @@
                         return await callFallbackCore();
                     } catch (fallbackError) {
                         console.error("Fallback core also failed:", fallbackError.message);
-                        // Pop the failed user prompt from history before showing error
-                        chatHistory.pop();
                         return `خطا در پردازش. لطفاً اتصال اینترنت خود را بررسی کرده و مجدداً تلاش کنید. اگر مشکل ادامه داشت، ممکن است هسته پردازشی موقتاً در دسترس نباشد.`;
                     }
                 } finally {
@@ -384,25 +382,13 @@
             }
 
             async function callFallbackCore() {
-                // Format for OpenRouter
                 const messages = chatHistory.map(item => ({
-                    role: item.role === 'model' ? 'assistant' : 'user',
+                    role: item.role === 'model' ? 'assistant' : (item.parts[0].text.includes("تو یک مربی IT") ? 'system' : 'user'),
                     content: item.parts[0].text
                 }));
                 const payload = { model: OPENROUTER_CONFIG.modelId, messages: messages };
-                const response = await fetch(OPENROUTER_CONFIG.apiUrl, { 
-                    method: 'POST', 
-                    headers: { 
-                        'Authorization': `Bearer ${OPENROUTER_CONFIG.apiKey}`, 
-                        'Content-Type': 'application/json' 
-                    }, 
-                    body: JSON.stringify(payload) 
-                });
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    console.error("OpenRouter API Error Body:", errorBody);
-                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                }
+                const response = await fetch(OPENROUTER_CONFIG.apiUrl, { method: 'POST', headers: { 'Authorization': `Bearer ${OPENROUTER_CONFIG.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
                 const result = await response.json();
                 if (result.choices?.[0]?.message?.content) {
                     const text = result.choices[0].message.content;

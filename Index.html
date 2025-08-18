@@ -1,182 +1,473 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بروزرسانی</title>
-    <!-- Tailwind CSS for utility classes -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Vazirmatn Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        /* Base & Fonts */
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #000000;
-            color: #c9d1d9;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iNFORMA ☬SHΞN™</title>
 
-        main {
-            flex-grow: 1;
-            position: relative;
-            z-index: 1; /* Make sure the main content is above the canvas */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#ff8d00" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="iNFORMA SHΞN" />
+  <meta name="description" content="آزمایشگاه هوش مصنوعی شین — راهکارهای فنی و آموزشی بدون نیاز به اینترنت" />
 
-        /* Framed UI Card Style */
-        .message-card {
-            background-color: rgba(10, 10, 10, 0.75); /* Reverted to the original dark transparent background */
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 141, 0, 0.5);
-            border-radius: 1.5rem;
-            box-shadow: 0 0 30px rgba(255, 141, 0, 0.2);
-            z-index: 2;
-        }
-        
-        /* Particle Canvas Style */
-        #background-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-        }
+  <!-- Icons -->
+  <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogImlORk9STUEgU0jDmE4iLAogICJzaG9ydF9uYW1lIjogIklORk9STUEiLAogICJzdGFydF91cmwiOiAiaW5kZXguaHRtbCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzAwMDAwMCIsCiAgInRoZW1lX2NvbG9yIjogI2ZmOGQwMCIsCiAgInNjb3BlIjogIi8iLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2NkbmltZy5zdGF0aWNmbGl4LmNvbS9sdWNpZGUvMS4wLjAvaWNvbnMvcm9ib3QtZmlsbC5zdmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiLAogICAgICAicHVycG9zZSI6ICJtb25vY2hyb21lIgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2NkbmltZy5zdGF0aWNmbGl4LmNvbS9sdWNpZGUvMS4wLjAvaWNvbnMvcm9ib3QtZmlsbC5zdmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiLAogICAgICAicHVycG9zZSI6ICJtb25vY2hyb21lIgogICAgfQogIF0KfQ==" />
+  <link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/npm/lucide-static@1.0.0/icons/robot-fill.svg" />
 
-        /* The key styles for the transparent font with wavy gradient */
-        .transparent-text {
-            color: transparent;
-            /* This is the wavy gradient. We will animate this background position */
-            background-image: linear-gradient(to right, #1a1a1a, #555555, #ffffff, #1a1a1a);
-            background-size: 400% 400%;
-            animation: gradient-wavy 10s ease infinite;
+  <!-- Fonts & Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/webllm@0.3.0/dist/webllm.browser.min.js"></script>
 
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 900;
-            text-shadow: none;
-        }
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
 
-        /* Keyframes for the wavy gradient animation */
-        @keyframes gradient-wavy {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-    </style>
+    body {
+      font-family: 'Vazirmatn', sans-serif;
+      background-color: #000000;
+      color: #c9d1d9;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    main {
+      flex-grow: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .font-orbitron {
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .animated-gradient-text {
+      background: linear-gradient(45deg, #ff4800, #ff8d00, #ffea00, #ff8d00, #ff4800);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-wave 5s ease infinite;
+    }
+
+    @keyframes gradient-wave {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .gradient-black-gray {
+      background: linear-gradient(to right, #a0a0a0, #444444);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .shen-card {
+      background-color: rgba(17, 17, 17, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 141, 0, 0.5);
+      border-radius: 1.5rem;
+      box-shadow: 0 0 20px rgba(255, 141, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .shen-input {
+      width: 100%;
+      background-color: #0a0a0a;
+      border: 1px solid #444;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      font-size: 1.125rem;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+      color: #c9d1d9;
+      direction: rtl;
+      text-align: right;
+      font-family: 'Vazirmatn', sans-serif;
+    }
+
+    .shen-input:focus {
+      border-color: #ff8d00;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(255, 141, 0, 0.4);
+    }
+
+    .shen-input::placeholder {
+      color: #666;
+      font-weight: 300;
+      text-align: right;
+    }
+
+    textarea.shen-input {
+      resize: none;
+    }
+
+    .mode-btn.active {
+      background-color: #ff8d00;
+      color: #000;
+      font-weight: 700;
+      box-shadow: 0 0 15px rgba(255, 141, 0, 0.5);
+    }
+
+    .training-type-btn {
+      border: 1px solid #444;
+    }
+
+    .training-type-btn.active {
+      background-color: #ff8d00 !important;
+      color: #000;
+      font-weight: 700;
+      border-color: #ff8d00;
+      box-shadow: 0 0 15px rgba(255, 141, 0, 0.5);
+    }
+
+    .chat-bubble {
+      animation: slide-up 0.5s ease-out forwards;
+      max-width: 95%;
+    }
+
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-bubble {
+      align-self: flex-end;
+    }
+
+    .ai-bubble {
+      align-self: flex-start;
+    }
+
+    .shen-logo {
+      width: 2.5rem;
+      height: 2.5rem;
+      background-color: rgba(255, 141, 0, 0.1);
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ff8d00;
+      border: 1px solid rgba(255, 141, 0, 0.3);
+      flex-shrink: 0;
+    }
+
+    #loading-indicator {
+      min-height: 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #loading-indicator.hidden {
+      display: none;
+    }
+
+    .loading-gradient-wave {
+      font-family: monospace;
+      white-space: nowrap;
+      background: linear-gradient(90deg, #ff4800, #ff8d00, #ffea00, #ff8d00, #ff4800);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: loading-gradient-animation 2.5s infinite linear;
+    }
+
+    @keyframes loading-gradient-animation {
+      0% {
+        background-position: 150% 50%;
+      }
+
+      100% {
+        background-position: -50% 50%;
+      }
+    }
+
+    #background-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .chat-container-fixed {
+      flex-grow: 1;
+      overflow-y: auto;
+      max-height: calc(100vh - 200px);
+      padding-bottom: 2rem;
+    }
+  </style>
 </head>
-<body>
 
-    <!-- Canvas for background effects -->
-    <canvas id="background-canvas"></canvas>
+<body class="pt-8 sm:pt-16">
+  <canvas id="background-canvas"></canvas>
 
-    <main class="container mx-auto px-4 w-full">
-        
-        <!-- Message Box -->
-        <div class="message-card p-8 md:p-12 max-w-2xl text-center">
-            <!-- Apply the transparent-text class with the new gradient -->
-            <h1 class="transparent-text text-2xl md:text-3xl leading-relaxed">
-                 بروز رسانی تا ساعاتی دیگر یه پایان رسیده و سرویس در دسترس خواهد بود
-            </h1>
+  <div class="flex flex-col min-h-screen">
+    <main class="container mx-auto px-4 w-full flex-grow">
+      <!-- Initial View -->
+      <div id="initial-view" class="view max-w-3xl mx-auto">
+        <div class="text-center mb-12">
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-black font-orbitron tracking-wide sm:tracking-wider">
+            <span class="gradient-black-gray">iNFORMA</span><span class="animated-gradient-text">SHΞN</span>
+          </h1>
+          <p class="text-sm md:text-base text-gray-300 mt-3">اولین لابراتوار دانشگاهی هسته مستقل شین</p>
         </div>
 
+        <div class="shen-card p-6 md:p-8">
+          <div class="w-full bg-black/20 rounded-full p-1.5 flex flex-row items-center justify-between font-bold mb-8 shadow-inner">
+            <button data-mode="آموزش" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base">یادم بده</button>
+            <button data-mode="تشریح مشکل" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base active">مشکل خوردم</button>
+            <button data-mode="تحلیل ارور" class="mode-btn flex-1 py-2 rounded-full text-center transition-all duration-300 text-xs sm:text-sm md:text-base">خطای چیه؟</button>
+          </div>
+          <div id="input-area" class="space-y-6"></div>
+          <div class="text-center mt-8">
+            <button id="start-btn" class="bg-gradient-to-br from-[#ff4800] to-[#ff8d00] text-black font-bold py-3 px-12 rounded-full text-lg hover:from-[#ff8d00] hover:to-[#ffea00] transition-all duration-300 transform hover:scale-105 shadow-lg shadow-orange-500/30">
+              بریـم بـراش
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat View -->
+      <div id="chat-view" class="view hidden max-w-3xl mx-auto flex flex-col min-h-screen">
+        <div id="menu-container" class="fixed top-5 right-5 z-20">
+          <button id="menu-toggle" class="w-12 h-12 rounded-full bg-gray-900/80 border border-orange-500/50 backdrop-blur-sm text-orange-400 flex items-center justify-center shadow-lg transform hover:scale-110 transition-all">
+            <i data-lucide="menu"></i>
+          </button>
+          <div id="floating-menu" class="absolute top-14 right-0 bg-black/80 border border-orange-500/50 backdrop-blur-md rounded-lg shadow-xl p-2 space-y-1 origin-top-right transition-all duration-200 transform scale-95 opacity-0 pointer-events-none">
+            <button id="home-btn" class="w-full flex items-center space-x-2 space-x-reverse p-2 rounded-md hover:bg-orange-500/10 transition-colors text-right text-orange-300">
+              <i data-lucide="home" class="w-5 h-5"></i>
+              <span>بزنی خودتو خاطراتت سوت میشید صفحه اول</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="text-center pt-4 pb-8">
+          <h2 class="text-xl font-bold" id="chat-title">تشریح مشکل</h2>
+          <p class="text-sm text-gray-400"> لابراتوار تحلیل متصل شد به ☬SHΞN™core</p>
+        </div>
+        <div id="chat-container" class="flex flex-col space-y-6 px-1 flex-grow"></div>
+      </div>
     </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Particle Effect Logic ---
-            const particleCanvas = document.getElementById('background-canvas');
-            const particleCtx = particleCanvas.getContext('2d');
-            let particleArray = [];
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="hidden text-center py-8">
+      <div id="loading-text-container" class="loading-gradient-wave text-base font-semibold">
+        [ ☬SHΞN™core در حال راه‌اندازی... ]
+      </div>
+    </div>
 
-            const particleConfig = {
-                particleCount: 150,
-                maxVelocity: 3.5,
-                connectionDistance: 130,
-                particleSize: 2,
-                particleColor: 'rgba(125, 331, 0, 0.7)',
-            };
+    <footer class="py-6 text-center text-sm relative z-10">
+      <p class="animated-gradient-text font-semibold">Exclusive ☬SHΞN™ made</p>
+    </footer>
+  </div>
 
-            function resizeParticleCanvas() {
-                particleCanvas.width = window.innerWidth;
-                particleCanvas.height = window.innerHeight;
-                createParticleArray(); 
-            }
-            window.addEventListener('resize', resizeParticleCanvas);
-            
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * particleCanvas.width;
-                    this.y = Math.random() * particleCanvas.height;
-                    this.vx = (Math.random() - 0.5) * particleConfig.maxVelocity;
-                    this.vy = (Math.random() - 0.5) * particleConfig.maxVelocity;
-                }
-                update() {
-                    this.x += this.vx;
-                    this.y += this.vy;
-                    if (this.x < 0 || this.x > particleCanvas.width) this.vx *= -1;
-                    if (this.y < 0 || this.y > particleCanvas.height) this.vy *= -1;
-                }
-                draw() {
-                    particleCtx.beginPath();
-                    particleCtx.arc(this.x, this.y, particleConfig.particleSize, 0, Math.PI * 2);
-                    particleCtx.fillStyle = particleConfig.particleColor;
-                    particleCtx.fill();
-                }
-            }
+  <!-- Templates -->
+  <template id="template-آموزش">
+    <div class="space-y-6">
+      <input type="text" id="topic" class="shen-input" placeholder="محتوا مثال: طراحی بات تلگرامی" />
+      <div class="flex items-center bg-black/20 rounded-full p-2 space-x-2 space-x-reverse">
+        <button data-value="شروع کلی" class="training-type-btn flex-1 p-3 rounded-md font-semibold text-xs sm:text-sm active">آموزش کلی</button>
+        <button data-value="مقطعی" class="training-type-btn flex-1 p-3 rounded-md font-semibold text-xs sm:text-sm">مبحث مشخص</button>
+      </div>
+      <div id="sub-topic-container" class="hidden">
+        <input type="text" id="sub-topic" class="shen-input" placeholder="کدوم بخش؟ مثلاً: وبهوک" />
+      </div>
+    </div>
+  </template>
 
-            function createParticleArray() {
-                particleArray = [];
-                for (let i = 0; i < particleConfig.particleCount; i++) {
-                    particleArray.push(new Particle());
-                }
-            }
+  <template id="template-تشریح-مشکل">
+    <textarea id="problem-desc" class="shen-input h-48" placeholder="مشکل خود را به زبان ساده و با جزئیات کامل اینجا بنویسید..."></textarea>
+  </template>
 
-            function connectParticles() {
-                for (let i = 0; i < particleArray.length; i++) {
-                    for (let j = i + 1; j < particleArray.length; j++) {
-                        const distance = Math.sqrt(
-                            (particleArray[i].x - particleArray[j].x) ** 2 +
-                            (particleArray[i].y - particleArray[j].y) ** 2
-                        );
-                        if (distance < particleConfig.connectionDistance) {
-                            particleCtx.beginPath();
-                            particleCtx.moveTo(particleArray[i].x, particleArray[i].y);
-                            particleCtx.lineTo(particleArray[j].x, particleArray[j].y);
-                            particleCtx.strokeStyle = `rgba(255, 141, 0, ${1 - distance / particleConfig.connectionDistance})`;
-                            particleCtx.lineWidth = 0.5;
-                            particleCtx.stroke();
-                        }
-                    }
-                }
-            }
+  <template id="template-تحلیل-ارور">
+    <div class="space-y-6">
+      <input type="text" id="error-source" class="shen-input" placeholder="محل خطا مثال: ترمینال لینوکس" />
+      <textarea id="error-text" class="shen-input h-48" placeholder="متن کامل ارور را اینجا کپی کنید..."></textarea>
+    </div>
+  </template>
 
-            function animateParticles() {
-                particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-                particleArray.forEach(p => {
-                    p.update();
-                    p.draw();
-                });
-                connectParticles();
-                requestAnimationFrame(animateParticles);
-            }
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      lucide.createIcons();
 
-            // Initial setup
-            resizeParticleCanvas();
-            animateParticles();
+      // --- PWA Install Prompt ---
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        setTimeout(() => {
+          if (confirm('آیا می‌خواهید iNFORMA SHΞN را روی دستگاه خود نصب کنید؟ دسترسی سریع‌تر و آفلاین!')) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => deferredPrompt = null);
+          }
+        }, 2000);
+      });
+
+      // --- WebLLM Engine ---
+      let engine;
+      const chatContainer = document.getElementById('chat-container');
+      const loadingIndicator = document.getElementById('loading-indicator');
+      const loadingTextContainer = document.getElementById('loading-text-container');
+
+      try {
+        loadingIndicator.classList.remove('hidden');
+        engine = await webllm.createEngine("Phi-3-mini-4k-instruct-q4f16_1-1k", {
+          init_callback: (progress) => {
+            const percent = Math.round(progress * 100);
+            loadingTextContainer.textContent = `[ ☬SHΞN™core در حال راه‌اندازی... ${percent}% ]`;
+          }
         });
-    </script>
+        loadingIndicator.classList.add('hidden');
+      } catch (err) {
+        loadingTextContainer.textContent = "خطا در بارگیری مدل. لطفاً اینترنت خود را بررسی کنید.";
+        console.error(err);
+      }
+
+      // --- UI State ---
+      const modeButtons = document.querySelectorAll('.mode-btn');
+      const inputArea = document.getElementById('input-area');
+      const startBtn = document.getElementById('start-btn');
+      const initialView = document.getElementById('initial-view');
+      const chatView = document.getElementById('chat-view');
+      const chatTitle = document.getElementById('chat-title');
+      const menuToggle = document.getElementById('menu-toggle');
+      const floatingMenu = document.getElementById('floating-menu');
+      const homeBtn = document.getElementById('home-btn');
+
+      let currentMode = 'تشریح مشکل';
+      let chatHistory = [];
+
+      const updateModeUI = () => {
+        modeButtons.forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.dataset.mode === currentMode) btn.classList.add('active');
+        });
+        const template = document.getElementById(`template-${currentMode.replace(' ', '-')}`);
+        inputArea.innerHTML = template ? template.innerHTML : '';
+        chatTitle.textContent = currentMode;
+      };
+
+      modeButtons.forEach(btn => btn.addEventListener('click', () => {
+        currentMode = btn.dataset.mode;
+        updateModeUI();
+      }));
+
+      startBtn.addEventListener('click', async () => {
+        if (!engine) return alert('مدل هنوز بارگیری نشده است.');
+
+        const inputs = {};
+        if (currentMode === 'آموزش') {
+          inputs.topic = document.getElementById('topic').value;
+          inputs.subTopic = document.getElementById('sub-topic')?.value || '';
+        } else if (currentMode === 'تشریح مشکل') {
+          inputs.desc = document.getElementById('problem-desc').value;
+        } else if (currentMode === 'تحلیل ارور') {
+          inputs.source = document.getElementById('error-source').value;
+          inputs.error = document.getElementById('error-text').value;
+        }
+
+        const prompt = generatePrompt(currentMode, inputs);
+        if (!prompt) return alert('لطفاً تمام فیلدها را پر کنید.');
+
+        initialView.classList.add('hidden');
+        chatView.classList.remove('hidden');
+        chatContainer.innerHTML = '';
+
+        chatHistory = [];
+        await processMessage(prompt);
+      });
+
+      async function processMessage(prompt) {
+        const userMsg = { role: 'user', content: prompt };
+        chatHistory.push(userMsg);
+        renderMessage(userMsg, true);
+
+        loadingIndicator.classList.remove('hidden');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        try {
+          const response = await engine.generate(prompt);
+          const aiMsg = { role: 'assistant', content: response };
+          chatHistory.push(aiMsg);
+          renderMessage(aiMsg, false);
+        } catch (err) {
+          renderMessage({ role: 'assistant', content: 'متاسفانه در پردازش پیام مشکلی پیش آمد. لطفاً دوباره تلاش کنید.' }, false);
+        } finally {
+          loadingIndicator.classList.add('hidden');
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+      }
+
+      function renderMessage(msg, isUser) {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble p-3 rounded-2xl max-w-xs md:max-w-md ${isUser ? 'user-bubble bg-gradient-to-br from-orange-500 to-orange-700 text-white' : 'ai-bubble bg-gray-800 text-gray-100'}`;
+        bubble.innerHTML = `<p class="whitespace-pre-wrap">${msg.content}</p>`;
+        chatContainer.appendChild(bubble);
+      }
+
+      function generatePrompt(mode, inputs) {
+        switch (mode) {
+          case 'آموزش':
+            return `تو یک مربی حرفه‌ای IT هستی. موضوع "${inputs.topic}" را به صورت ${inputs.subTopic ? `در مورد زیرموضوع "${inputs.subTopic}"` : 'کلی'} آموزش بده. ساده، دقیق و با مثال.`;
+          case 'تشریح مشکل':
+            return `یک کاربر گفت: "${inputs.desc}". به زبان ساده و فنی راه‌حل پیشنهاد بده.`;
+          case 'تحلیل ارور':
+            return `در ${inputs.source} این خطا رخ داده: "${inputs.error}". علت و راه‌حل را توضیح بده.`;
+          default:
+            return null;
+        }
+      }
+
+      // --- Menu Toggle ---
+      menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        floatingMenu.classList.toggle('scale-95');
+        floatingMenu.classList.toggle('opacity-0');
+        floatingMenu.classList.toggle('pointer-events-none');
+      });
+
+      homeBtn.addEventListener('click', () => {
+        chatView.classList.add('hidden');
+        initialView.classList.remove('hidden');
+        chatContainer.innerHTML = '';
+        chatHistory = [];
+        updateModeUI();
+      });
+
+      document.addEventListener('click', () => {
+        if (floatingMenu && !floatingMenu.classList.contains('opacity-0')) {
+          floatingMenu.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+        }
+      });
+    });
+  </script>
 </body>
+
 </html>
